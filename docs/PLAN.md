@@ -54,6 +54,11 @@ Phase 1 Inputs:
 - 텍스트 중심 문서
 - 페이지 번호를 확인할 수 있는 문서
 
+Selected Sample:
+
+- [NC DAC Sample Contract Template](https://www.dac.nc.gov/documents/files/sample-contract-template-0)
+- 이유: 작고 단순하며 공개 가능하고, 텍스트 파싱 결과를 검증하기 쉽다.
+
 Phase 1 Non-Goals:
 
 - retrieval
@@ -69,6 +74,15 @@ Phase 1 Demo Definition:
 
 완료 기준:
 - 한 개 이상의 PDF를 업로드하고 파싱 결과를 볼 수 있다.
+
+Phase 1 Execution Order:
+
+1. 샘플 문서 1개를 확정한다.
+2. Phase 1 저장 방식을 `로컬 파일 + 단순 메타데이터 저장`으로 고정한다.
+3. 업로드 API와 파싱 API의 최소 응답 형식을 확정한다.
+4. PDF 업로드와 페이지별 텍스트 추출 기능을 구현한다.
+5. 결과를 확인할 수 있는 최소 화면 또는 API 응답을 만든다.
+6. 샘플 문서 기준으로 데모와 기록을 남긴다.
 
 ### Phase 2 - Retrieval Foundation
 
@@ -140,9 +154,51 @@ Phase 1 Demo Definition:
 
 지금 당장 해야 할 일:
 
-- 샘플 문서 후보 2~3개 정리
-- 샘플 문서 선정 기준 확정
-- Phase 1 구현 이슈를 업로드, 파싱, 결과 표시로 분해
+- 업로드 / 파싱 API 계약 정의
+- 파싱 결과 데이터 구조 정의
+- 첫 vertical slice 구현 범위를 파일 저장과 페이지 텍스트 추출까지로 고정
+
+### Next Commit Goal
+
+다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
+
+- 업로드 / 파싱 API 계약 확정
+- 파싱 결과 데이터 구조 확정
+- 첫 vertical slice 구현 시작점 문서화
+
+### Phase 1 Task Checklist
+
+- [x] 샘플 문서 후보 2~3개 수집
+- [x] 최종 샘플 문서 1개 선택
+- [x] Phase 1에서 사용할 저장 방식 확정
+- [x] 업로드 API 입력/출력 형식 정의
+- [x] 파싱 결과 데이터 구조 정의
+- [ ] 결과 확인 화면 또는 API 출력 형태 정의
+- [ ] Phase 1 완료 조건을 README / WORKLOG에 연결
+
+### Recommended First Issue Breakdown
+
+다음 구현은 아래 3개 이슈로 나누는 것을 권장한다.
+
+1. `sample-doc-selection`
+   - 공개 가능한 PDF 1개 선정
+   - 선정 이유와 제외한 후보 기록
+
+2. `phase1-api-contract`
+   - 업로드 요청 형식
+   - 파싱 응답 형식
+   - 문서 메타데이터 형식
+
+3. `phase1-vertical-slice`
+   - 업로드
+   - 페이지별 텍스트 추출
+   - 결과 확인
+
+### Locked Decisions For Phase 1
+
+- 저장 방식: 로컬 PDF 파일 + 문서 id 기준 JSON 파싱 결과 저장
+- 최소 API: `POST /documents/upload`, `GET /documents/{document_id}`
+- 출력 단위: 업로드 직후에는 page summary, 상세 조회에서는 full page text
 
 ## 6. Sample Document Selection Rule
 
@@ -153,6 +209,14 @@ Phase 1 Demo Definition:
 - 텍스트 중심 PDF일 것
 - 페이지 번호 확인이 가능할 것
 - 질문 3~5개를 만들 수 있을 정도로 내용이 분명할 것
+
+### Candidate Order
+
+우선 후보는 아래 순서로 검토한다.
+
+1. [NC DAC Sample Contract Template](https://www.dac.nc.gov/documents/files/sample-contract-template-0)
+2. [Wells Fargo 2024 Annual Report](https://www.wellsfargo.com/about/investor-relations/annual-reports/)
+3. [IDACORP Annual Reports](https://www.idacorpinc.com/investor-relations/financial-info/annual-reports/default.aspx)
 
 ## 7. Risks And Response
 

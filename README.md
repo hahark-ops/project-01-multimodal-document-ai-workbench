@@ -69,8 +69,16 @@
 
 ## Demo Scenario Candidates
 
-초기 데모는 아래 문서 유형을 상정합니다.
+Phase 1에 사용할 첫 기준 문서는 아래와 같습니다.
 
-- 공개 취업공고 PDF
-- 개인정보가 제거된 계약서 템플릿
-- 직접 작성한 보고서 형식 PDF
+- 선택 문서: [NC DAC Sample Contract Template](https://www.dac.nc.gov/documents/files/sample-contract-template-0)
+- 선택 이유:
+  - 공개 가능한 공식 PDF
+  - 텍스트 중심 문서
+  - 2페이지 분량이라 첫 vertical slice에 적합
+  - 계약 문서 구조가 분명해서 이후 질문응답 예시를 만들기 쉽다.
+
+백업 후보:
+
+- [Wells Fargo 2024 Annual Report](https://www.wellsfargo.com/about/investor-relations/annual-reports/)
+- [IDACORP Annual Reports](https://www.idacorpinc.com/investor-relations/financial-info/annual-reports/default.aspx)

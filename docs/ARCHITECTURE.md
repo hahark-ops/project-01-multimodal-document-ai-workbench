@@ -84,10 +84,20 @@ Frontend
 
 | 항목 | 결정 시점 | 판단 기준 |
 |------|-----------|-----------|
-| 샘플 문서 유형 | Phase 1 시작 전 | 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 |
+| 샘플 문서 유형 | 완료 | `NC DAC Sample Contract Template` 선택. 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 기준 통과 |
 | Vector Store | Phase 2 시작 전 | 로컬 개발 단순성, 검색 실험 편의성 |
 | Model Provider | Phase 3 시작 전 | API 사용성, 비용, AWS 확장성 |
 | 장기 저장 방식 | Phase 2 시작 전 | 로컬 개발 편의성, 이후 S3 확장 가능성 |
+
+### Phase 1 Selected Sample
+
+- 문서: [NC DAC Sample Contract Template](https://www.dac.nc.gov/documents/files/sample-contract-template-0)
+- 유형: 계약서 템플릿 PDF
+- 분량: 2페이지
+- 선택 이유:
+  - 작고 단순해서 첫 업로드/파싱 검증에 적합
+  - 조항 구조가 명확해서 페이지 단위 결과 확인이 쉽다.
+  - 이후 contract-style 질문응답 예시로 확장하기 좋다.
 
 ## 7. Planned Components
 
@@ -150,12 +160,121 @@ Frontend
 Phase 1에서는 저장 구조를 단순하게 가져갑니다.
 
 - 원본 PDF: 로컬 파일 시스템 저장
-- 파싱 결과: 문서 id 기준 JSON 또는 메모리 저장
+- 파싱 결과: 문서 id 기준 JSON 저장
 - chunk / embedding: 아직 저장하지 않음
 
 이렇게 시작하는 이유는 업로드와 파싱 흐름을 먼저 안정화하기 위해서입니다.
 
-## 10. Quality Criteria
+권장 디렉터리 개념:
+
+```text
+storage/
+├── uploads/
+│   └── {document_id}.pdf
+└── parsed/
+    └── {document_id}.json
+```
+
+## 10. Phase 1 API Contract
+
+Phase 1에서는 아래 두 개의 API만 우선 정의합니다.
+
+### `POST /documents/upload`
+
+목적:
+- PDF 파일을 업로드하고 파싱 결과를 바로 반환한다.
+
+요청:
+- `multipart/form-data`
+- field: `file`
+
+성공 응답 예시:
+
+```json
+{
+  "document_id": "doc_001",
+  "filename": "sample-contract-template.pdf",
+  "status": "parsed",
+  "page_count": 2,
+  "pages": [
+    {
+      "page_number": 1,
+      "char_count": 1240,
+      "text_preview": "This contract is entered into..."
+    },
+    {
+      "page_number": 2,
+      "char_count": 980,
+      "text_preview": "Either party may terminate..."
+    }
+  ]
+}
+```
+
+실패 응답 예시:
+
+```json
+{
+  "error": {
+    "code": "UNSUPPORTED_FILE_TYPE",
+    "message": "Only PDF files are supported in Phase 1."
+  }
+}
+```
+
+### `GET /documents/{document_id}`
+
+목적:
+- 저장된 파싱 결과를 다시 조회한다.
+
+성공 응답 예시:
+
+```json
+{
+  "document_id": "doc_001",
+  "filename": "sample-contract-template.pdf",
+  "status": "parsed",
+  "page_count": 2,
+  "pages": [
+    {
+      "page_number": 1,
+      "char_count": 1240,
+      "text": "Full page text..."
+    },
+    {
+      "page_number": 2,
+      "char_count": 980,
+      "text": "Full page text..."
+    }
+  ]
+}
+```
+
+## 11. Phase 1 Data Structure
+
+Phase 1에서 필요한 최소 데이터 구조는 아래와 같습니다.
+
+### Upload Result Summary
+
+- `document_id`
+- `filename`
+- `status`
+- `page_count`
+- `pages[].page_number`
+- `pages[].char_count`
+- `pages[].text_preview`
+
+### Parsed Document Detail
+
+- `document_id`
+- `filename`
+- `status`
+- `page_count`
+- `pages[].page_number`
+- `pages[].char_count`
+- `pages[].text`
+
+## 12. Quality Criteria
 
 Phase 1 완성 기준은 아래와 같습니다.
 
@@ -166,7 +285,7 @@ Phase 1 완성 기준은 아래와 같습니다.
 
 최종 MVP의 품질 기준은 `docs/PLAN.md`를 따른다.
 
-## 11. Main Risks
+## 13. Main Risks
 
 - 문서 종류에 따라 파싱 품질 차이가 크다.
 - retrieval이 맞아도 답변이 근거를 잘못 묶을 수 있다.
@@ -174,8 +293,7 @@ Phase 1 완성 기준은 아래와 같습니다.
 
 따라서 초기 성공 기준은 "텍스트 중심 PDF에서 업로드와 파싱 결과 확인 흐름이 안정적으로 보이는가"입니다.
 
-## 12. Open Questions
+## 14. Open Questions
 
-- Phase 1에서 파싱 결과 메타데이터를 JSON으로 둘지, SQLite로 바로 둘지
 - Vector Store를 Qdrant로 바로 갈지, pgvector로 단순화할지
 - 요약 기능을 retrieval 뒤에 붙일지, 독립 기능으로 먼저 만들지
