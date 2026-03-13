@@ -224,3 +224,33 @@
 ### 다음 단계
 - Phase 5로 넘어가서 데모 캡처, 품질 해석, 실패 사례, 최종 README 정리를 진행한다.
 - evaluation 결과를 읽고 어떤 질문이 약한지 포트폴리오 관점에서 해석한다.
+
+## 2026-03-13 - Phase 5 portfolio wrap-up
+
+### 목표
+- 구현 결과를 포트폴리오 관점에서 읽히는 형태로 정리하고, 실제 데모 증빙과 결과 해석을 저장소 안에 남긴다.
+
+### 변경 사항
+- README를 포트폴리오용 구조로 전면 정리했다.
+- demo capture 이미지를 `docs/assets`에 추가했다.
+- `docs/RESULTS.md`에 demo 흐름, baseline evaluation 결과, 해석, 실패 사례를 정리했다.
+- `docs/TALKING_POINTS.md`에 발표 / 면접용 설명 포인트를 정리했다.
+- PLAN과 ARCHITECTURE에 Phase 5 완료 상태와 baseline evidence를 반영했다.
+
+### 배운 점 / 이슈
+- 포트폴리오에서는 기능 목록보다 "무엇을 증명했고 무엇은 아직 증명하지 못했는가"를 구분해서 쓰는 편이 훨씬 중요하다.
+- 100% pass rate 같은 숫자는 강해 보이지만, 어떤 문서와 어떤 평가셋 기준인지 함께 적지 않으면 오히려 신뢰도가 떨어질 수 있다.
+- demo capture, 결과 해석, talking points를 분리해두니 저장소를 보는 사람과 면접에서 설명하는 사람 모두에게 쓰기 쉬워졌다.
+
+### 검증
+- 로컬 서버에서 PDF 업로드, retrieval, grounded answer, summary, evaluation까지 실제 실행
+- baseline evaluation result 확인:
+  - question count `5`
+  - retrieval hit rate `100%`
+  - citation hit rate `100%`
+  - answer keyword hit rate `100%`
+  - overall pass rate `100%`
+
+### 다음 단계
+- OCR, external vector store, LLM provider, deployment 중 어떤 확장을 먼저 할지 결정한다.
+- 문서 유형을 늘려 evaluation suite를 다양화한다.

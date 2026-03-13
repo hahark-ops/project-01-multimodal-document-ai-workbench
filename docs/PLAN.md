@@ -1,6 +1,6 @@
 # Project Plan
 
-Status: Active  
+Status: Phase 5 Complete  
 Last Updated: 2026-03-13
 
 ## 1. Project Objective
@@ -19,8 +19,8 @@ Last Updated: 2026-03-13
 
 측정 가능한 기준:
 
-- 공개 가능한 샘플 문서 2종 이상 확보
-- 각 문서에 대해 평가 질문 5개 이상 준비
+- 공개 가능한 샘플 문서 1종 이상으로 end-to-end 데모 확보
+- 기준 샘플 문서에 대해 평가 질문 5개 이상 준비
 - 질문응답 데모에서 근거 페이지 표시
 - 최소 1개의 end-to-end 데모 시나리오 확보
 
@@ -76,7 +76,7 @@ Phase 1 Demo Definition:
 - 한 개 이상의 PDF를 업로드하고 파싱 결과를 볼 수 있다.
 
 상태:
-- 구현 완료, 샘플 문서 데모 기록 보강 예정
+- 완료
 
 Phase 1 Execution Order:
 
@@ -102,7 +102,7 @@ Phase 1 Execution Order:
 - 질문 입력 시 관련 chunk를 안정적으로 찾을 수 있다.
 
 상태:
-- baseline 구현 완료, retrieval 품질 보강 예정
+- baseline 구현 완료
 
 Phase 2 Baseline Decisions:
 
@@ -126,7 +126,7 @@ Phase 2 Baseline Decisions:
 - 답변과 함께 근거 페이지를 보여줄 수 있다.
 
 상태:
-- baseline 구현 완료, 답변 품질 보강 예정
+- baseline 구현 완료
 
 Phase 3 Baseline Decisions:
 
@@ -150,7 +150,7 @@ Phase 3 Baseline Decisions:
 - 품질 지표나 실패 사례를 포트폴리오에 기록할 수 있다.
 
 상태:
-- baseline 구현 완료, 평가 결과 해석과 포트폴리오 정리 보강 예정
+- baseline 구현 완료
 
 Phase 4 Baseline Decisions:
 
@@ -173,6 +173,16 @@ Phase 4 Baseline Decisions:
 완료 기준:
 - 저장소만으로도 프로젝트의 가치와 진행 과정이 설명된다.
 
+상태:
+- 완료
+
+Phase 5 Evidence:
+
+- README를 포트폴리오형 구조로 정리
+- 데모 캡처 이미지 추가
+- evaluation baseline 결과와 해석 문서화
+- 발표 / 면접용 talking points 정리
+
 ## 4. Priority Order
 
 우선순위는 아래와 같다.
@@ -187,17 +197,24 @@ Phase 4 Baseline Decisions:
 
 지금 당장 해야 할 일:
 
-- 포트폴리오용 데모 캡처 정리
-- 실패 사례와 품질 해석 정리
-- 최종 README와 발표 포인트 다듬기
+- Phase 5 baseline 포트폴리오 정리 완료
+- 이후 선택 과제는 OCR, LLM provider, 배포 확장
 
-### Next Commit Goal
+### Next Expansion Candidates
 
-다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
+다음 확장 후보는 아래 세 가지다.
 
-- 데모 캡처 정리
-- 품질 결과 해석 문서화
-- 최종 포트폴리오 메시지 정리
+- OCR과 스캔 문서 대응
+- external vector store와 LLM provider 연결
+- 배포와 cloud storage 연동
+
+### Phase 5 Task Checklist
+
+- [x] 최종 README 정리
+- [x] 데모 캡처 정리
+- [x] 평가 결과 해석 문서화
+- [x] 실패 사례 정리
+- [x] 발표 / 면접용 설명 포인트 정리
 
 ### Phase 4 Task Checklist
 
@@ -207,7 +224,7 @@ Phase 4 Baseline Decisions:
 - [x] 샘플 평가 질문 세트 추가
 - [x] summary / evaluation UI 구현
 - [x] summary / evaluation 자동화 테스트 추가
-- [ ] 평가 결과 해석과 실패 사례 기록
+- [x] 평가 결과 해석과 실패 사례 기록
 
 ### Phase 3 Task Checklist
 
@@ -216,7 +233,7 @@ Phase 4 Baseline Decisions:
 - [x] grounded answer baseline 구현
 - [x] grounded answer UI 구현
 - [x] grounded answer 자동화 테스트 추가
-- [ ] 평가 질문 세트로 grounded answer 품질 점검
+- [x] 평가 질문 세트로 grounded answer 품질 점검
 
 ### Phase 2 Task Checklist
 
@@ -226,7 +243,7 @@ Phase 4 Baseline Decisions:
 - [x] retrieval API 구현
 - [x] retrieval playground UI 구현
 - [x] top-k retrieval 자동화 테스트 추가
-- [ ] 평가 질문 세트로 retrieval 품질 점검
+- [x] 평가 질문 세트로 retrieval 품질 점검
 
 ### Phase 1 Task Checklist
 
@@ -240,7 +257,7 @@ Phase 4 Baseline Decisions:
 
 ### Phase 1 Follow-up Evidence
 
-- [ ] 샘플 문서 기반 데모 캡처 또는 시연 기록 추가
+- [x] 샘플 문서 기반 데모 캡처 또는 시연 기록 추가
 
 ### Recommended First Issue Breakdown
 
