@@ -12,6 +12,7 @@ class UploadResponse(BaseModel):
     filename: str
     status: str
     page_count: int
+    chunk_count: int = 0
     pages: list[PageSummary]
 
 
@@ -26,6 +27,7 @@ class DocumentDetail(BaseModel):
     filename: str
     status: str
     page_count: int
+    chunk_count: int = 0
     pages: list[PageDetail]
 
 

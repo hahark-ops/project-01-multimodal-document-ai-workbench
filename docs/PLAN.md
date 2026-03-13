@@ -101,6 +101,16 @@ Phase 1 Execution Order:
 완료 기준:
 - 질문 입력 시 관련 chunk를 안정적으로 찾을 수 있다.
 
+상태:
+- baseline 구현 완료, retrieval 품질 보강 예정
+
+Phase 2 Baseline Decisions:
+
+- chunk 저장 방식: 문서 id 기준 JSON 저장
+- retrieval 인덱스: 외부 인프라 대신 로컬 on-disk vector index로 시작
+- 임베딩 방식: provider 의존성 없이 deterministic hashed embedding 사용
+- 검색 범위: 현재는 문서 단위 top-k retrieval 우선
+
 ### Phase 3 - Grounded Answer
 
 목표:
@@ -157,17 +167,27 @@ Phase 1 Execution Order:
 
 지금 당장 해야 할 일:
 
-- chunking 기준 정의
-- retrieval 기준 메타데이터 구조 설계
-- Vector Store 선택 기준 확정
+- 질문응답 API 입력/출력 형식 정의
+- citation 구조 정의
+- Phase 3 grounded answer 시작 조건 확정
 
 ### Next Commit Goal
 
 다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
 
-- chunk 데이터 구조 확정
-- retrieval 실험 기준 정의
-- Phase 2 시작점 문서화
+- 질문응답 API 계약 정의
+- citation 데이터 구조 확정
+- grounded answer 시작점 문서화
+
+### Phase 2 Task Checklist
+
+- [x] chunking 기준 정의
+- [x] chunk 메타데이터 구조 정의
+- [x] 문서별 chunk 저장 구현
+- [x] retrieval API 구현
+- [x] retrieval playground UI 구현
+- [x] top-k retrieval 자동화 테스트 추가
+- [ ] 평가 질문 세트로 retrieval 품질 점검
 
 ### Phase 1 Task Checklist
 

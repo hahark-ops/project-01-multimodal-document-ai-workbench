@@ -22,5 +22,6 @@ venv/
 
 storage/uploads/
 storage/parsed/
+storage/chunks/
 
 *.log

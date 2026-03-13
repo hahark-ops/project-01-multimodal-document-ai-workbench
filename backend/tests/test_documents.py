@@ -40,10 +40,12 @@ def test_upload_pdf_and_fetch_document_detail(tmp_path) -> None:
     assert upload_payload["status"] == "parsed"
     assert upload_payload["filename"] == "sample-contract-template.pdf"
     assert upload_payload["page_count"] == 2
+    assert upload_payload["chunk_count"] >= 2
     assert len(upload_payload["pages"]) == 2
     assert "contract" in upload_payload["pages"][0]["text_preview"].lower()
     assert (tmp_path / "uploads" / f"{upload_payload['document_id']}.pdf").exists()
     assert (tmp_path / "parsed" / f"{upload_payload['document_id']}.json").exists()
+    assert (tmp_path / "chunks" / f"{upload_payload['document_id']}.json").exists()
 
     detail_response = client.get(f"/documents/{upload_payload['document_id']}")
 
@@ -51,8 +53,52 @@ def test_upload_pdf_and_fetch_document_detail(tmp_path) -> None:
     detail_payload = detail_response.json()
 
     assert detail_payload["document_id"] == upload_payload["document_id"]
+    assert detail_payload["chunk_count"] == upload_payload["chunk_count"]
     assert len(detail_payload["pages"]) == 2
     assert "written notice" in detail_payload["pages"][1]["text"].lower()
+
+
+def test_get_document_chunks_returns_chunk_metadata() -> None:
+    client = TestClient(app)
+
+    upload_response = client.post(
+        "/documents/upload",
+        files={"file": ("sample-contract-template.pdf", _build_test_pdf_bytes(), "application/pdf")},
+    )
+    document_id = upload_response.json()["document_id"]
+
+    response = client.get(f"/documents/{document_id}/chunks")
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["document_id"] == document_id
+    assert payload["chunk_count"] >= 2
+    assert payload["chunks"][0]["page_number"] == 1
+    assert "text_preview" in payload["chunks"][0]
+
+
+def test_retrieval_search_returns_relevant_chunk() -> None:
+    client = TestClient(app)
+
+    upload_response = client.post(
+        "/documents/upload",
+        files={"file": ("sample-contract-template.pdf", _build_test_pdf_bytes(), "application/pdf")},
+    )
+    document_id = upload_response.json()["document_id"]
+
+    response = client.post(
+        "/retrieval/search",
+        json={"document_id": document_id, "query": "terminate notice", "top_k": 2},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["document_id"] == document_id
+    assert len(payload["results"]) == 2
+    assert payload["results"][0]["page_number"] == 2
+    assert "terminate" in payload["results"][0]["text"].lower()
 
 
 def test_reject_non_pdf_upload() -> None:

@@ -147,3 +147,29 @@
 ### 다음 단계
 - Phase 2를 위해 chunk 구조와 retrieval 기준 메타데이터를 정의한다.
 - 샘플 문서 기준의 실제 데모 캡처를 추후 포트폴리오 정리 단계에서 남긴다.
+
+## 2026-03-13 - Phase 2 retrieval foundation 구현
+
+### 목표
+- 파싱된 문서를 chunk 단위로 저장하고, 질문에 대해 관련 chunk를 찾는 baseline retrieval을 만든다.
+
+### 변경 사항
+- backend에 chunk 생성 로직과 로컬 on-disk vector index를 추가했다.
+- `GET /documents/{document_id}/chunks`, `POST /retrieval/search` API를 구현했다.
+- 업로드 시 문서를 자동으로 chunking하고 chunk metadata를 JSON으로 저장하도록 연결했다.
+- frontend에 chunk preview와 retrieval 결과를 확인할 수 있는 playground UI를 추가했다.
+- Phase 2 상태를 README, PLAN, ARCHITECTURE에 반영했다.
+
+### 배운 점 / 이슈
+- 검색 품질을 바로 완벽하게 만드는 것보다, 먼저 chunk 구조와 검색 인터페이스를 고정하는 편이 다음 단계 진행이 빠르다.
+- 외부 벡터 저장소나 임베딩 API를 바로 붙이기 전에 로컬 baseline을 만들면 테스트와 반복 실험이 쉬워진다.
+- Phase 2에서는 "정답 생성"보다 "관련 근거를 먼저 잘 찾는 구조"를 만드는 것이 핵심이었다.
+
+### 검증
+- backend: `uv run pytest` 통과
+- frontend: `npm run build` 통과
+
+### 다음 단계
+- Phase 3를 위해 질문응답 API 계약을 정의한다.
+- citation 구조와 답변 포맷을 고정한다.
+- retrieval 결과를 바탕으로 grounded answer를 생성하는 흐름을 설계한다.

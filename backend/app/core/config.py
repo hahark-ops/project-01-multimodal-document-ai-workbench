@@ -25,3 +25,7 @@ def get_uploads_dir() -> Path:
 
 def get_parsed_dir() -> Path:
     return get_storage_root() / "parsed"
+
+
+def get_chunks_dir() -> Path:
+    return get_storage_root() / "chunks"

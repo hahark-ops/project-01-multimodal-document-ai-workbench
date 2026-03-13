@@ -1,136 +1,15 @@
 "use client";
 
 import { startTransition, useState } from "react";
-
-type UploadPageSummary = {
-  page_number: number;
-  char_count: number;
-  text_preview: string;
-};
-
-type UploadResponse = {
-  document_id: string;
-  filename: string;
-  status: string;
-  page_count: number;
-  pages: UploadPageSummary[];
-};
-
-type PageDetail = {
-  page_number: number;
-  char_count: number;
-  text: string;
-};
-
-type DocumentDetail = {
-  document_id: string;
-  filename: string;
-  status: string;
-  page_count: number;
-  pages: PageDetail[];
-};
-
-type APIError = {
-  error?: {
-    code: string;
-    message: string;
-  };
-};
-
-function getApiBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
-    return process.env.NEXT_PUBLIC_API_BASE_URL;
-  }
-
-  if (typeof window === "undefined") {
-    return "http://localhost:8000";
-  }
-
-  const { protocol, hostname } = window.location;
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    return `${protocol}//${hostname}:8000`;
-  }
-
-  throw new Error("NEXT_PUBLIC_API_BASE_URL must be set outside local development.");
-}
-
-async function parseJsonSafely(response: Response): Promise<unknown | null> {
-  const responseText = await response.text();
-  if (!responseText) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(responseText) as unknown;
-  } catch {
-    return null;
-  }
-}
+import { RetrievalPlayground } from "@/components/retrieval-playground";
+import { getApiBaseUrl, getApiErrorMessage, parseJsonSafely } from "@/lib/api";
+import { DocumentDetail, isDocumentDetail, isUploadResponse, UploadResponse } from "@/lib/document-ai";
 
 function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) {
     return text;
   }
   return `${text.slice(0, maxLength)}...`;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function isUploadPageSummary(value: unknown): value is UploadPageSummary {
-  return (
-    isRecord(value) &&
-    typeof value.page_number === "number" &&
-    typeof value.char_count === "number" &&
-    typeof value.text_preview === "string"
-  );
-}
-
-function isPageDetail(value: unknown): value is PageDetail {
-  return (
-    isRecord(value) &&
-    typeof value.page_number === "number" &&
-    typeof value.char_count === "number" &&
-    typeof value.text === "string"
-  );
-}
-
-function isUploadResponse(value: unknown): value is UploadResponse {
-  return (
-    isRecord(value) &&
-    typeof value.document_id === "string" &&
-    typeof value.filename === "string" &&
-    typeof value.status === "string" &&
-    typeof value.page_count === "number" &&
-    Array.isArray(value.pages) &&
-    value.pages.every(isUploadPageSummary)
-  );
-}
-
-function isDocumentDetail(value: unknown): value is DocumentDetail {
-  return (
-    isRecord(value) &&
-    typeof value.document_id === "string" &&
-    typeof value.filename === "string" &&
-    typeof value.status === "string" &&
-    typeof value.page_count === "number" &&
-    Array.isArray(value.pages) &&
-    value.pages.every(isPageDetail)
-  );
-}
-
-function getApiErrorMessage(value: unknown): string | null {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  const error = value.error;
-  if (!isRecord(error) || typeof error.message !== "string") {
-    return null;
-  }
-
-  return error.message;
 }
 
 export function DocumentUploader() {
@@ -202,18 +81,18 @@ export function DocumentUploader() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-            Phase 1 Demo
+            Phase 2 Demo
           </p>
           <h2 className="mt-3 text-2xl font-semibold text-slate-950">
-            Upload And Parse A PDF
+            Upload, Chunk, And Search A PDF
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            현재 단계에서는 PDF 업로드, 로컬 저장, 페이지별 텍스트 추출, 결과 확인까지를
-            하나의 vertical slice로 구현합니다.
+            현재 단계에서는 PDF 업로드, 로컬 저장, 페이지별 텍스트 추출, chunk 생성,
+            그리고 top-k retrieval 확인까지를 하나의 흐름으로 구현합니다.
           </p>
         </div>
         <div className="rounded-full border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-700">
-          Backend contract aligned
+          Retrieval baseline ready
         </div>
       </div>
 
@@ -270,8 +149,19 @@ export function DocumentUploader() {
               <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Pages</p>
               <p className="mt-2 text-sm font-medium text-white">{uploadResult.page_count}</p>
             </div>
+            <div className="rounded-2xl bg-white/10 px-4 py-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Chunks</p>
+              <p className="mt-2 text-sm font-medium text-white">{uploadResult.chunk_count}</p>
+            </div>
           </div>
         </div>
+      ) : null}
+
+      {uploadResult ? (
+        <RetrievalPlayground
+          documentId={uploadResult.document_id}
+          filename={uploadResult.filename}
+        />
       ) : null}
 
       {documentDetail ? (

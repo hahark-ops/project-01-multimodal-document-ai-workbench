@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Baseline v0.2  
+Status: Baseline v0.3  
 Last Updated: 2026-03-13
 
 ## 1. Product Goal
@@ -67,8 +67,9 @@ Frontend
 - Backend: FastAPI
 - Parsing: PyMuPDF
 - Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 문서 id 기준 JSON 저장
+- Phase 2 Retrieval Store: 문서 id 기준 chunk JSON + 로컬 on-disk vector index
 - OCR: Tesseract를 후속 단계에 추가
-- Vector Store: Qdrant 또는 pgvector를 Phase 2 시작 전에 확정
+- External Vector Store: Qdrant 또는 pgvector는 grounded answer 이후 확장 시점에 재검토
 - Model Provider: OpenAI 또는 Bedrock을 Phase 3 시작 전에 확정
 
 선정 이유:
@@ -85,7 +86,7 @@ Frontend
 | 항목 | 결정 시점 | 판단 기준 |
 |------|-----------|-----------|
 | 샘플 문서 유형 | 완료 | `NC DAC Sample Contract Template` 선택. 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 기준 통과 |
-| Vector Store | Phase 2 시작 전 | 로컬 개발 단순성, 검색 실험 편의성 |
+| Retrieval Baseline | 완료 | 외부 인프라 없이 반복 실험 가능한 로컬 on-disk vector index 선택 |
 | Model Provider | Phase 3 시작 전 | API 사용성, 비용, AWS 확장성 |
 | 장기 저장 방식 | Phase 2 시작 전 | 로컬 개발 편의성, 이후 S3 확장 가능성 |
 
@@ -110,6 +111,15 @@ Frontend
 - Backend PDF 파싱 서비스
 - 로컬 PDF 저장
 - JSON 기반 파싱 결과 저장
+
+### Implemented In Phase 2
+
+- Backend chunk 생성 로직
+- Backend 문서별 chunk 조회 API
+- Backend top-k retrieval API
+- 로컬 on-disk vector index
+- Frontend retrieval playground UI
+- chunk preview 화면
 
 ### Frontend
 
@@ -181,7 +191,9 @@ Phase 1에서는 저장 구조를 단순하게 가져갑니다.
 storage/
 ├── uploads/
 │   └── {document_id}.pdf
-└── parsed/
+├── parsed/
+│   └── {document_id}.json
+└── chunks/
     └── {document_id}.json
 ```
 
@@ -321,7 +333,48 @@ Phase 1 완성 기준은 아래와 같습니다.
 
 최종 MVP의 품질 기준은 `docs/PLAN.md`를 따른다.
 
-## 13. Main Risks
+## 13. Phase 2 Retrieval Contract
+
+Phase 2에서는 아래 두 개의 retrieval surface를 추가합니다.
+
+### `GET /documents/{document_id}/chunks`
+
+목적:
+- 문서가 어떤 chunk로 분해되었는지 확인한다.
+
+성공 응답 핵심:
+
+- `document_id`
+- `chunk_count`
+- `chunks[].page_number`
+- `chunks[].chunk_index`
+- `chunks[].word_count`
+- `chunks[].text_preview`
+
+### `POST /retrieval/search`
+
+목적:
+- 질문에 대해 관련성이 높은 chunk를 top-k로 반환한다.
+
+요청 핵심:
+
+- `query`
+- `document_id`
+- `top_k`
+
+성공 응답 핵심:
+
+- `query`
+- `document_id`
+- `top_k`
+- `results[].page_number`
+- `results[].chunk_index`
+- `results[].score`
+- `results[].text`
+
+Phase 2 baseline은 grounded answer를 생성하지 않고, retrieval 결과만 반환한다.
+
+## 14. Main Risks
 
 - 문서 종류에 따라 파싱 품질 차이가 크다.
 - retrieval이 맞아도 답변이 근거를 잘못 묶을 수 있다.
@@ -329,7 +382,8 @@ Phase 1 완성 기준은 아래와 같습니다.
 
 따라서 초기 성공 기준은 "텍스트 중심 PDF에서 업로드와 파싱 결과 확인 흐름이 안정적으로 보이는가"입니다.
 
-## 14. Open Questions
+## 15. Open Questions
 
-- Vector Store를 Qdrant로 바로 갈지, pgvector로 단순화할지
+- 외부 vector store를 Qdrant로 갈지, pgvector로 갈지
+- hashed embedding baseline을 어떤 시점에 provider embedding으로 교체할지
 - 요약 기능을 retrieval 뒤에 붙일지, 독립 기능으로 먼저 만들지

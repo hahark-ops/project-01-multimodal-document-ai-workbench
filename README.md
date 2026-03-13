@@ -4,10 +4,10 @@
 
 ## Current Status
 
-- 상태: Phase 1 vertical slice 구현 완료, 샘플 문서 데모 기록 보강 예정
+- 상태: Phase 2 retrieval foundation 구현 완료, 샘플 문서 데모 기록 보강 예정
 - 시작일: 2026-03-13
 - 대상: AWS AI School 포트폴리오 프로젝트
-- 현재 저장소 구성: 계획 문서 + Phase 1 코드 구현
+- 현재 저장소 구성: 계획 문서 + Phase 2 코드 구현
 
 ## Document Map
 
@@ -50,9 +50,20 @@
 - JSON 기반 파싱 결과 저장
 - Next.js 업로드 UI와 페이지별 텍스트 결과 화면
 
+## Current Retrieval Foundation
+
+Phase 2에서 추가로 구현한 범위는 아래와 같습니다.
+
+- 문서별 chunk 생성과 JSON 저장
+- `GET /documents/{document_id}/chunks`
+- `POST /retrieval/search`
+- top-k retrieval 결과 반환
+- Next.js retrieval playground UI
+- 문서별 chunk preview와 검색 결과 확인
+
 현재 저장소에 남아 있는 검증 근거:
 
-- 자동화 테스트로 PDF 업로드, 상세 조회, 파일 검증, 에러 응답 형식 확인
+- 자동화 테스트로 PDF 업로드, 상세 조회, chunk 조회, retrieval 검색, 파일 검증, 에러 응답 형식 확인
 - 프론트엔드 프로덕션 빌드 통과
 - 샘플 문서를 사용한 실제 데모 캡처와 회고는 이후 포트폴리오 정리 단계에서 추가
 
