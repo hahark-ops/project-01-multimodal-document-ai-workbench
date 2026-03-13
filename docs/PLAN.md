@@ -35,7 +35,7 @@ Last Updated: 2026-03-13
 - README, ARCHITECTURE, WORKLOG, PLAN 작성 완료
 
 상태:
-- 구현 완료, 샘플 문서 데모 기록 보강 예정
+- 완료
 
 ### Phase 1 - First Vertical Slice
 
@@ -76,12 +76,12 @@ Phase 1 Demo Definition:
 - 한 개 이상의 PDF를 업로드하고 파싱 결과를 볼 수 있다.
 
 상태:
-- 완료
+- 구현 완료, 샘플 문서 데모 기록 보강 예정
 
 Phase 1 Execution Order:
 
 1. 샘플 문서 1개를 확정한다.
-2. Phase 1 저장 방식을 `로컬 파일 + 단순 메타데이터 저장`으로 고정한다.
+2. Phase 1 저장 방식을 `로컬 PDF + 문서 id 기준 JSON 저장`으로 고정한다.
 3. 업로드 API와 파싱 API의 최소 응답 형식을 확정한다.
 4. PDF 업로드와 페이지별 텍스트 추출 기능을 구현한다.
 5. 결과를 확인할 수 있는 최소 화면 또는 API 응답을 만든다.
@@ -178,6 +178,9 @@ Phase 1 Execution Order:
 - [x] 파싱 결과 데이터 구조 정의
 - [x] 결과 확인 화면 또는 API 출력 형태 정의
 - [x] Phase 1 완료 조건을 README / WORKLOG에 연결
+
+### Phase 1 Follow-up Evidence
+
 - [ ] 샘플 문서 기반 데모 캡처 또는 시연 기록 추가
 
 ### Recommended First Issue Breakdown
