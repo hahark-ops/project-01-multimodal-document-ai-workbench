@@ -1,3 +1,5 @@
+import { DocumentUploader } from "@/components/document-uploader";
+
 const pipelineSteps = [
   "Document upload",
   "PDF parsing / OCR",
@@ -75,48 +77,54 @@ export default function HomePage() {
           </aside>
         </div>
 
-        <section className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-[2rem] border border-slate-200 bg-white/75 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] backdrop-blur">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-              Pipeline
-            </p>
-            <ol className="mt-5 space-y-3">
-              {pipelineSteps.map((step, index) => (
-                <li
-                  key={step}
-                  className="flex items-center gap-4 rounded-2xl border border-slate-200 px-4 py-4"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
-                    {index + 1}
-                  </span>
-                  <span className="text-base font-medium text-slate-800">{step}</span>
-                </li>
-              ))}
-            </ol>
+        <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-6">
+            <DocumentUploader />
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white/75 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] backdrop-blur">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-              MVP outputs
-            </p>
-            <div className="mt-5 grid gap-4">
-              <div className="rounded-3xl bg-sky-50 p-5">
-                <p className="text-sm text-sky-700">Document summary</p>
-                <p className="mt-2 text-lg font-semibold text-sky-950">
-                  핵심 내용을 빠르게 파악할 수 있는 요약
-                </p>
-              </div>
-              <div className="rounded-3xl bg-emerald-50 p-5">
-                <p className="text-sm text-emerald-700">Evidence-based Q&A</p>
-                <p className="mt-2 text-lg font-semibold text-emerald-950">
-                  답변과 함께 근거 문단, 페이지 번호 제공
-                </p>
-              </div>
-              <div className="rounded-3xl bg-rose-50 p-5">
-                <p className="text-sm text-rose-700">Evaluation logs</p>
-                <p className="mt-2 text-lg font-semibold text-rose-950">
-                  retrieval 정확도와 grounded answer 품질 기록
-                </p>
+          <div className="space-y-6">
+            <div className="rounded-[2rem] border border-slate-200 bg-white/75 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] backdrop-blur">
+              <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
+                Pipeline
+              </p>
+              <ol className="mt-5 space-y-3">
+                {pipelineSteps.map((step, index) => (
+                  <li
+                    key={step}
+                    className="flex items-center gap-4 rounded-2xl border border-slate-200 px-4 py-4"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
+                      {index + 1}
+                    </span>
+                    <span className="text-base font-medium text-slate-800">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white/75 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] backdrop-blur">
+              <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
+                MVP outputs
+              </p>
+              <div className="mt-5 grid gap-4">
+                <div className="rounded-3xl bg-sky-50 p-5">
+                  <p className="text-sm text-sky-700">Document summary</p>
+                  <p className="mt-2 text-lg font-semibold text-sky-950">
+                    핵심 내용을 빠르게 파악할 수 있는 요약
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-emerald-50 p-5">
+                  <p className="text-sm text-emerald-700">Evidence-based Q&amp;A</p>
+                  <p className="mt-2 text-lg font-semibold text-emerald-950">
+                    답변과 함께 근거 문단, 페이지 번호 제공
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-rose-50 p-5">
+                  <p className="text-sm text-rose-700">Evaluation logs</p>
+                  <p className="mt-2 text-lg font-semibold text-rose-950">
+                    retrieval 정확도와 grounded answer 품질 기록
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -6,13 +6,14 @@
 
 - FastAPI 앱 진입점
 - health 체크 라우트
-- 문서 업로드용 placeholder 라우트
+- PDF 업로드 및 문서 상세 조회 라우트
+- 로컬 파일 저장
+- PyMuPDF 기반 페이지별 텍스트 추출
 - 기본 테스트 파일
 - `uv` 기반 Python 프로젝트 설정
 
 ## Planned
 
-- PDF 저장 및 파싱
 - chunking / embedding / retrieval
 - 요약 및 질문응답 로직
 

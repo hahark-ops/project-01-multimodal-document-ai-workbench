@@ -6,6 +6,8 @@
 
 - App Router 기준 기본 페이지
 - 프로젝트 소개용 초기 랜딩 화면
+- PDF 업로드 폼
+- 업로드 후 파싱 결과 표시 UI
 - Tailwind CSS 기반 스타일 파일
 
 ## Planned
