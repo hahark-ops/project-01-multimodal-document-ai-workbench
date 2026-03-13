@@ -1,230 +1,181 @@
-# Architecture Draft
+# Architecture
 
-## 1. Goal
+Status: Draft v0.1  
+Last Updated: 2026-03-13
 
-이 프로젝트의 1차 목표는 "멀티모달 문서를 업로드하고, 근거 기반으로 질문응답과 요약을 제공하는 최소 동작 제품"을 만드는 것입니다.
+## 1. Product Goal
 
-처음부터 모든 문서 유형과 고급 기능을 한 번에 구현하지 않고 아래 순서로 확장합니다.
+이 프로젝트의 1차 목표는 멀티모달 문서를 업로드하고, 근거 기반 질문응답과 요약을 제공하는 최소 동작 제품을 만드는 것입니다.
 
-- 1단계: 텍스트 중심 PDF 업로드, 파싱, 검색, 질문응답
-- 2단계: 스캔 문서 OCR 추가
-- 3단계: 표/이미지 설명, reranking, 평가 고도화
+처음부터 모든 문서 유형과 고급 기능을 다루지 않고, 아래 순서로 범위를 확장합니다.
 
-## 2. Initial Technical Decisions
+- 1단계: 텍스트 중심 PDF 파싱
+- 2단계: 검색과 근거 제시
+- 3단계: 요약 및 핵심 정보 추출
+- 4단계: OCR과 평가 고도화
 
-### Frontend: Next.js
+## 2. Phase 1 Scope
 
-- 단일 페이지 대시보드와 업로드 UI를 만들기 좋다.
-- React 기반이라 포트폴리오 설명이 쉽고 자료가 많다.
-- 이후 배포와 확장이 비교적 편하다.
+1차 구현에서는 아래 범위에 집중합니다.
 
-### Backend: FastAPI
+- 업로드 가능한 문서 형식은 PDF만 허용
+- 텍스트 중심 PDF 우선
+- 페이지별 텍스트 추출
+- 파싱 결과 화면 표시
 
-- Python 생태계의 OCR, 문서 파싱, 임베딩 라이브러리와 연결이 쉽다.
-- 비개발자 출발 프로젝트에서도 구조를 이해하기 상대적으로 쉽다.
-- Swagger 기반 API 문서를 자동으로 제공할 수 있다.
+이번 단계에서 하지 않는 것:
 
-### Parsing: PyMuPDF
+- retrieval
+- grounded answer 생성
+- 표 구조 정교한 복원
+- 이미지 설명 자동 생성
+- 협업 기능
+- 복잡한 비동기 작업 큐
 
-- PDF에서 텍스트와 페이지 단위 정보를 빠르게 추출하기 좋다.
-- 초기 MVP에서 "페이지 번호 기반 근거 표기"를 구현하기 유리하다.
+## 3. User Flow
 
-### OCR: Tesseract
+1. 사용자가 PDF를 업로드한다.
+2. 시스템이 문서를 파싱하고 페이지별 텍스트를 추출한다.
+3. 이후 단계에서 텍스트를 chunk 단위로 나누고 검색 가능한 형태로 저장한다.
+4. 이후 단계에서 사용자가 질문을 입력한다.
+5. 이후 단계에서 시스템이 관련 chunk를 찾고, 답변과 근거 페이지를 함께 반환한다.
 
-- 스캔 문서 대응을 위한 2단계 도입 도구다.
-- 처음부터 OCR 품질 최적화보다 "OCR 파이프라인 연결"을 먼저 확인하는 데 적합하다.
-
-### Vector Store: Qdrant
-
-- 벡터 검색 용도가 명확하고 로컬 개발이 비교적 단순하다.
-- 메타데이터 필터링과 검색 실험을 하기에 적절하다.
-
-### Model Provider Strategy
-
-- LLM/Embedding 호출부는 추상화해서 OpenAI와 Bedrock 중 하나를 교체 가능하게 설계한다.
-- 초기 개발은 가장 빠르게 검증 가능한 provider로 시작하고, 이후 AWS 연동을 추가한다.
-
-## 3. High-Level Flow
+## 4. System Flow
 
 ```text
-[User Upload]
-    ->
-[Next.js Frontend]
-    ->
-[FastAPI API]
-    ->
-[Document Parser / OCR]
-    ->
-[Chunking + Metadata Builder]
-    ->
-[Embedding Generator]
-    ->
-[Qdrant Index]
-
-[User Question]
-    ->
-[Next.js Frontend]
-    ->
-[FastAPI API]
-    ->
-[Retriever]
-    ->
-[Optional Reranker]
-    ->
-[LLM Answer Generator]
-    ->
-[Answer + Citation(Page, Chunk)]
+User
+  -> Upload PDF
+Frontend
+  -> Backend API
+Parser
+  -> Page Text
+Chunking
+  -> Embedding / Index
+Retriever
+  -> Context
+LLM
+  -> Answer + Citation
+Frontend
+  -> Result View
 ```
 
-## 4. Main Components
+## 5. Initial Technical Direction
 
-### 4.1 Frontend
+현재 작업 기준의 baseline은 아래와 같습니다.
+
+- Frontend: Next.js
+- Backend: FastAPI
+- Parsing: PyMuPDF
+- Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 단순 JSON 또는 메모리 저장으로 시작
+- OCR: Tesseract를 후속 단계에 추가
+- Vector Store: Qdrant 또는 pgvector를 Phase 2 시작 전에 확정
+- Model Provider: OpenAI 또는 Bedrock을 Phase 3 시작 전에 확정
+
+선정 이유:
+
+- Python 생태계가 문서 파싱과 OCR에 유리하다.
+- FastAPI는 API 문서화와 실험이 빠르다.
+- Next.js는 포트폴리오 데모 화면 구성에 유리하다.
+- 초기에는 복잡한 인프라보다 구현과 검증 속도가 더 중요하다.
+
+## 6. Decisions To Lock Next
+
+아래 항목은 아직 미정이지만, 언제 무엇을 기준으로 결정할지 정합니다.
+
+| 항목 | 결정 시점 | 판단 기준 |
+|------|-----------|-----------|
+| 샘플 문서 유형 | Phase 1 시작 전 | 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 |
+| Vector Store | Phase 2 시작 전 | 로컬 개발 단순성, 검색 실험 편의성 |
+| Model Provider | Phase 3 시작 전 | API 사용성, 비용, AWS 확장성 |
+| 장기 저장 방식 | Phase 2 시작 전 | 로컬 개발 편의성, 이후 S3 확장 가능성 |
+
+## 7. Planned Components
+
+### Frontend
 
 - 문서 업로드 화면
-- 업로드한 문서 목록 화면
-- 문서별 요약 및 질문응답 화면
-- 답변 근거 페이지 번호와 문단 표시
+- 문서 상세 화면
+- 질문응답 화면
+- 요약 결과 화면
 
-### 4.2 Backend API
+### Backend
 
-- 파일 업로드 처리
-- 문서 파싱 및 인덱싱 작업 시작
-- 문서 목록/상세 조회
-- 문서 질문응답 및 요약 API
-- 평가용 API 또는 내부 스크립트 연결
+- 문서 업로드 API
+- 문서 파싱 서비스
+- chunk 생성 로직
+- 검색 / 질문응답 API
+- 요약 API
 
-### 4.3 Parsing Pipeline
+### Data Layer
 
-- PDF 텍스트 추출
-- 페이지 정보 저장
-- 스캔 여부 판단
-- 필요 시 OCR 수행
-- 표/이미지 처리는 후속 단계에서 추가
+- 원본 파일 저장
+- 페이지 텍스트 저장
+- chunk 및 메타데이터 저장
+- 검색용 벡터 저장
 
-### 4.4 Retrieval / Generation
-
-- 문서를 chunk 단위로 분리
-- chunk와 페이지 정보를 함께 저장
-- 질문 시 top-k 검색
-- 필요하면 reranking 적용
-- 최종 답변에 근거 문단과 페이지 번호 연결
-
-### 4.5 Evaluation
-
-- 샘플 문서별 질문 세트 구성
-- retrieval hit 여부 기록
-- grounded answer 여부 기록
-- latency 측정
-
-## 5. Suggested Data Model
+## 8. Core Data Objects
 
 ### Document
 
-- `id`
-- `filename`
-- `title`
-- `file_type`
-- `page_count`
-- `status`
-- `created_at`
+- id
+- filename
+- title
+- status
+- page_count
+- created_at
 
-### DocumentChunk
+### Page
 
-- `id`
-- `document_id`
-- `page_number`
-- `chunk_index`
-- `content`
-- `modality`
-- `metadata`
+- document_id
+- page_number
+- text
 
-### QAResponse
+### Chunk
 
-- `question`
-- `answer`
-- `citations`
-- `latency_ms`
+- document_id
+- page_number
+- chunk_index
+- content
+- embedding
 
-### EvalCase
+### Answer
 
-- `document_id`
-- `question`
-- `expected_pages`
-- `expected_keywords`
-- `result`
+- question
+- answer_text
+- citations
+- latency_ms
 
-## 6. Initial API Plan
+## 9. Storage Boundary For Phase 1
 
-- `POST /documents/upload`
-- `GET /documents`
-- `GET /documents/{document_id}`
-- `POST /documents/{document_id}/index`
-- `POST /documents/{document_id}/ask`
-- `POST /documents/{document_id}/summarize`
-- `GET /health`
+Phase 1에서는 저장 구조를 단순하게 가져갑니다.
 
-처음에는 비동기 작업 큐 없이 시작하고, 필요해지면 background task 또는 worker 구조를 추가합니다.
+- 원본 PDF: 로컬 파일 시스템 저장
+- 파싱 결과: 문서 id 기준 JSON 또는 메모리 저장
+- chunk / embedding: 아직 저장하지 않음
 
-## 7. Repository Structure
+이렇게 시작하는 이유는 업로드와 파싱 흐름을 먼저 안정화하기 위해서입니다.
 
-```text
-.
-├── backend/
-│   ├── app/
-│   └── tests/
-├── data/
-│   └── samples/
-├── docs/
-├── frontend/
-│   ├── app/
-│   └── components/
-├── infra/
-└── scripts/
-```
+## 10. Quality Criteria
 
-### Directory Purpose
+Phase 1 완성 기준은 아래와 같습니다.
 
-- `frontend`: 업로드 UI, 문서 목록, Q&A 화면
-- `backend`: FastAPI 서버, 파싱, 인덱싱, 질의응답 로직
-- `docs`: 아키텍처, 작업 기록, 실험 결과 문서
-- `data/samples`: 공개 가능한 샘플 문서 설명 또는 예시
-- `infra`: Docker Compose, 배포 설정
-- `scripts`: 평가, 데이터 정리, 개발 보조 스크립트
+- 텍스트 PDF 업로드가 실패 없이 동작한다.
+- 파싱된 텍스트를 페이지 단위로 확인할 수 있다.
+- 샘플 문서 1개 이상에서 데모가 가능하다.
+- 데모 화면에서 업로드와 파싱 결과 확인 흐름이 보인다.
 
-## 8. Development Strategy
+최종 MVP의 품질 기준은 `docs/PLAN.md`를 따른다.
 
-### Phase 1
+## 11. Main Risks
 
-- 텍스트 중심 PDF 1~2개로 업로드와 파싱 성공
-- chunk 저장 및 검색
-- 근거 페이지 번호를 포함한 단순 Q&A 구현
+- 문서 종류에 따라 파싱 품질 차이가 크다.
+- retrieval이 맞아도 답변이 근거를 잘못 묶을 수 있다.
+- OCR 단계가 들어가면 난도가 급격히 올라간다.
 
-### Phase 2
+따라서 초기 성공 기준은 "텍스트 중심 PDF에서 업로드와 파싱 결과 확인 흐름이 안정적으로 보이는가"입니다.
 
-- OCR 문서 추가
-- 스캔 문서에 대한 품질 확인
-- 요약 및 핵심 항목 추출 추가
+## 12. Open Questions
 
-### Phase 3
-
-- reranking 또는 retrieval 개선
-- 평가셋 구성
-- latency / quality 지표 기록
-
-## 9. Sample Documents Strategy
-
-초기 샘플 문서는 아래 범위에서 고릅니다.
-
-- 공개 취업공고 PDF
-- 개인정보가 제거된 계약서 템플릿
-- 직접 만든 사내 보고서 형태의 PDF
-
-실제 개인정보, 회사 내부 문서, 민감 정보는 저장소에 올리지 않습니다.
-
-## 10. Key Risks
-
-- 파싱 품질이 문서 유형마다 크게 다를 수 있다.
-- 검색은 맞지만 답변이 근거를 잘못 묶을 수 있다.
-- OCR 단계가 들어가면 구현과 디버깅 난도가 급격히 올라간다.
-
-이 때문에 초기 완성 기준은 "텍스트 중심 PDF에서 근거 기반 답변이 동작하는가"로 잡습니다.
+- Phase 1에서 파싱 결과 메타데이터를 JSON으로 둘지, SQLite로 바로 둘지
+- Vector Store를 Qdrant로 바로 갈지, pgvector로 단순화할지
+- 요약 기능을 retrieval 뒤에 붙일지, 독립 기능으로 먼저 만들지

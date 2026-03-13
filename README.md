@@ -1,107 +1,76 @@
 # Multimodal Document AI Workbench
 
-계약서, 취업공고, 사내 문서처럼 텍스트와 표, 이미지가 섞인 문서를 업로드하면 내용을 파싱하고, 근거와 함께 질문응답 및 요약을 제공하는 멀티모달 문서 AI 프로젝트입니다.
+텍스트, 표, 이미지가 섞인 PDF 문서를 업로드하면 내용을 파싱하고, 근거 기반 질문응답과 요약을 제공하는 포트폴리오 프로젝트입니다.
 
-## Project Status
+## Current Status
 
-- 현재 단계: 첫 vertical slice 구현 완료
+- 상태: 재시작 완료, 문서 중심 계획 단계
 - 시작일: 2026-03-13
-- 목적: AWS AI School 포트폴리오 프로젝트
-- 진행 기록: [docs/WORKLOG.md](docs/WORKLOG.md)
-- 아키텍처 문서: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- 현재 구현 범위: PDF 업로드, 로컬 저장, 페이지별 텍스트 추출, 업로드 결과 UI 표시
+- 대상: AWS AI School 포트폴리오 프로젝트
+- 현재 저장소 구성: 계획 문서 4개만 유지
+
+## Document Map
+
+- 프로젝트 개요와 기준점: [README.md](README.md)
+- 기술 방향과 시스템 설계: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- 실제 진행 기록: [docs/WORKLOG.md](docs/WORKLOG.md)
+- 단계별 실행 계획: [docs/PLAN.md](docs/PLAN.md)
 
 ## Why This Project
 
-실무 문서는 텍스트만 있는 경우보다 표, 차트, 스캔 이미지가 함께 포함된 경우가 많습니다. 단순 챗봇만으로는 이런 문서에 대해 신뢰도 높은 답변을 만들기 어렵고, 특히 "어디를 근거로 답했는지"를 설명하지 못하면 실제 업무에서 활용하기 어렵습니다.
+실무 문서는 텍스트만 있는 것이 아니라 표, 차트, 스캔 이미지가 함께 포함되는 경우가 많습니다. 이런 문서에서는 단순 챗봇보다, "어떤 근거를 바탕으로 답했는지"를 보여주는 시스템이 더 중요합니다.
 
-이 프로젝트는 문서 파싱, 검색, 재정렬, 답변 생성, 출처 표기, 평가까지 이어지는 RAG 파이프라인을 직접 설계하고 구현해 보는 것을 목표로 합니다.
+이 프로젝트는 문서 파싱, 검색, 근거 제시, 요약, 평가까지 이어지는 멀티모달 문서 AI 시스템을 직접 설계하고 구현하는 것을 목표로 합니다.
 
-## Project Goal
+## MVP Goal
 
-- PDF, 이미지, 스캔 문서를 업로드할 수 있다.
-- 문서에서 텍스트와 표, 이미지 설명을 추출하고 저장한다.
-- 사용자 질문에 대해 근거 문단과 페이지 번호를 함께 제시한다.
-- 문서 요약과 핵심 항목 추출 기능을 제공한다.
-- 평가셋으로 retrieval 성능과 grounded answer 품질을 점검한다.
+최종 MVP 기준으로 아래 기능을 목표로 합니다.
 
-## MVP Scope
+- PDF 문서를 업로드할 수 있다.
+- 페이지 단위 텍스트를 추출하고 저장할 수 있다.
+- 문서 질문에 대해 관련 문단과 페이지 번호를 함께 제시할 수 있다.
+- 문서 전체 요약과 핵심 정보 추출 결과를 보여줄 수 있다.
+- 최소한의 평가 질문 세트로 retrieval 품질을 점검할 수 있다.
 
-- 문서 업로드 UI 또는 간단한 대시보드
-- OCR 및 문서 파싱 파이프라인
-- chunking 및 멀티모달 인덱싱
-- 문서 질문응답 RAG
-- 답변 근거 문단 및 페이지 표시
-- 문서 요약 및 핵심 정보 추출
-- 기본 평가셋과 결과 기록
+## First Vertical Slice
 
-## Selected Initial Stack
+가장 먼저 만들 기능은 최종 MVP 전체가 아니라 아래 범위입니다.
 
-구현 난도와 포트폴리오 완성 가능성을 같이 고려해 아래 조합으로 시작합니다.
+- 텍스트 중심 PDF 1개 이상 업로드
+- 페이지별 텍스트 추출
+- 파싱 결과 화면 표시
 
-- Frontend: Next.js, Tailwind CSS
-- Backend: FastAPI
-- Parsing: PyMuPDF
-- OCR: Tesseract
-- Embedding / LLM: provider abstraction을 두고 OpenAI 또는 Bedrock 연결
-- Vector DB: Qdrant
-- Storage: local file storage로 시작하고 이후 S3 확장
-- Infra: Docker Compose 기반 로컬 개발, 이후 AWS 배포 확장
+이 첫 단계를 통과한 뒤 retrieval, grounded answer, 요약 기능을 순서대로 붙입니다.
 
-선정 이유는 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)에 정리했습니다.
+## Repository Principle
 
-## Repository Structure
+- 구현 전에 문서로 방향을 먼저 정리한다.
+- 한 번에 큰 기능을 만들지 않고 작은 vertical slice부터 만든다.
+- 각 단계는 GitHub 커밋과 작업 기록으로 남긴다.
+- 민감한 문서, 개인정보, API 키는 저장소에 올리지 않는다.
 
-```text
-.
-├── backend/        # FastAPI 서버와 파싱/RAG 파이프라인
-├── data/           # 샘플 문서 및 로컬 데이터 가이드
-├── docs/           # 아키텍처, 작업 기록, 설계 문서
-├── frontend/       # Next.js 사용자 인터페이스
-├── infra/          # Docker/AWS 배포 관련 설정
-└── scripts/        # 개발 보조 스크립트
-```
+## What This Repository Should Show
 
-## Milestones
+- 문제를 어떻게 정의했는지
+- 왜 그 기술 선택을 했는지
+- 어떤 순서로 구현 범위를 줄였는지
+- 정확도와 신뢰도를 어떻게 검증했는지
+- 시행착오를 어떻게 기록하고 개선했는지
 
-- [x] 프로젝트 아이디어 정리 및 README 초안 작성
-- [x] GitHub 저장소 생성 및 초기 커밋
-- [x] 포트폴리오형 README 구조 재정리
-- [x] 최종 아키텍처 및 폴더 구조 결정
-- [x] 프론트엔드/백엔드 기본 프로젝트 생성
-- [x] 첫 vertical slice 구현
-- [ ] 문서 업로드 및 파싱 파이프라인 고도화
-- [ ] chunking 및 인덱싱 파이프라인 구축
-- [ ] 근거 기반 문서 질의응답 구현
-- [ ] 문서 요약 및 핵심 항목 추출 구현
-- [ ] 평가셋 구축 및 성능 측정
-- [ ] 배포 및 최종 포트폴리오 정리
+## Portfolio Signals
 
-## What To Show In Portfolio
+이 프로젝트로 보여주고 싶은 역량은 아래와 같습니다.
 
-- 왜 파인튜닝보다 먼저 RAG를 선택했는지
-- 문서 파싱, chunking, reranking이 정확도에 어떤 영향을 줬는지
-- hallucination을 줄이기 위해 출처 표기와 평가셋을 어떻게 설계했는지
-- latency와 비용을 어떤 기준으로 관리했는지
-- 문서 유형별 실패 사례와 개선 과정을 어떻게 기록했는지
+- 문서 AI 문제 정의와 범위 조절 능력
+- RAG 파이프라인 설계 능력
+- 근거 기반 응답과 평가 기준 설계 능력
+- AWS 확장을 고려한 현실적인 기술 선택 능력
+- GitHub 기록과 회고를 통한 문제 해결 과정 정리 능력
 
-## Success Metrics
+## Demo Scenario Candidates
 
-- top-k retrieval accuracy
-- grounded answer rate
-- answer latency
-- 문서 유형별 실패 사례와 개선 전후 비교
+초기 데모는 아래 문서 유형을 상정합니다.
 
-## Repository Rules
-
-- 의미 있는 작업 단위로 커밋한다.
-- 큰 단계가 끝날 때마다 README와 작업 기록 문서를 업데이트한다.
-- API 키, 민감한 문서, 개인정보는 저장소에 올리지 않는다.
-- 구현 전 단계에서도 계획과 판단 근거를 문서로 남긴다.
-
-## Next Step
-
-- 파싱 결과를 chunk 단위 데이터로 변환
-- 임베딩 생성 및 Qdrant 저장 연결
-- 문서 상세 화면에서 파싱 결과와 이후 검색 결과를 함께 보여주기
-- 샘플 문서 2~3종 확보 및 평가 기준 초안 작성
+- 공개 취업공고 PDF
+- 개인정보가 제거된 계약서 템플릿
+- 직접 작성한 보고서 형식 PDF
