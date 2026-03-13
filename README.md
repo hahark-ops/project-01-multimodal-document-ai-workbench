@@ -4,10 +4,11 @@
 
 ## Project Status
 
-- 현재 단계: 기획 및 MVP 설계
+- 현재 단계: 아키텍처 초안 완료 및 기본 프로젝트 뼈대 생성
 - 시작일: 2026-03-13
 - 목적: AWS AI School 포트폴리오 프로젝트
 - 진행 기록: [docs/WORKLOG.md](docs/WORKLOG.md)
+- 아키텍처 문서: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Why This Project
 
@@ -33,28 +34,40 @@
 - 문서 요약 및 핵심 정보 추출
 - 기본 평가셋과 결과 기록
 
-## Planned Tech Stack
+## Selected Initial Stack
 
-아래 스택은 초기 후보이며 구현 과정에서 조정될 수 있습니다.
+구현 난도와 포트폴리오 완성 가능성을 같이 고려해 아래 조합으로 시작합니다.
 
-- Frontend: Next.js or React, Tailwind CSS
-- Backend: FastAPI or NestJS
-- Parsing/OCR: PyMuPDF, Unstructured, Tesseract, PaddleOCR
-- AI Orchestration: LangChain or LlamaIndex
-- Embedding: Amazon Nova Multimodal Embeddings or multilingual embedding models
-- Vector DB: OpenSearch, pgvector, or Qdrant
-- Reranking: cross-encoder reranker or Bedrock reranking stack
-- LLM/VLM: Amazon Bedrock models, OpenAI models, or open-source VLM
-- Storage/Infra: S3, Docker, ECS/EKS or EC2
-- Evaluation: RAGAS, custom eval set, latency/cost logging
+- Frontend: Next.js, Tailwind CSS
+- Backend: FastAPI
+- Parsing: PyMuPDF
+- OCR: Tesseract
+- Embedding / LLM: provider abstraction을 두고 OpenAI 또는 Bedrock 연결
+- Vector DB: Qdrant
+- Storage: local file storage로 시작하고 이후 S3 확장
+- Infra: Docker Compose 기반 로컬 개발, 이후 AWS 배포 확장
+
+선정 이유는 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)에 정리했습니다.
+
+## Repository Structure
+
+```text
+.
+├── backend/        # FastAPI 서버와 파싱/RAG 파이프라인
+├── data/           # 샘플 문서 및 로컬 데이터 가이드
+├── docs/           # 아키텍처, 작업 기록, 설계 문서
+├── frontend/       # Next.js 사용자 인터페이스
+├── infra/          # Docker/AWS 배포 관련 설정
+└── scripts/        # 개발 보조 스크립트
+```
 
 ## Milestones
 
 - [x] 프로젝트 아이디어 정리 및 README 초안 작성
 - [x] GitHub 저장소 생성 및 초기 커밋
 - [x] 포트폴리오형 README 구조 재정리
-- [ ] 최종 아키텍처 및 폴더 구조 결정
-- [ ] 프론트엔드/백엔드 기본 프로젝트 생성
+- [x] 최종 아키텍처 및 폴더 구조 결정
+- [x] 프론트엔드/백엔드 기본 프로젝트 생성
 - [ ] 문서 업로드 및 파싱 파이프라인 구축
 - [ ] chunking 및 인덱싱 파이프라인 구축
 - [ ] 근거 기반 문서 질의응답 구현
@@ -86,6 +99,7 @@
 
 ## Next Step
 
-- 아키텍처 초안 작성
-- 프로젝트 폴더 구조 결정
-- 첫 구현 범위에 사용할 샘플 문서 유형 선정
+- 문서 업로드에서 파싱까지 이어지는 첫 vertical slice 구현
+- 업로드한 PDF를 페이지 단위로 파싱해서 결과를 반환하는 API 구현
+- 프론트엔드에서 파일 업로드와 상태 표시 연결
+- 샘플 문서 2~3종 확보 및 평가 기준 초안 작성

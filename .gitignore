@@ -21,3 +21,8 @@ build/
 coverage/
 
 *.log
+
+data/raw/
+data/processed/
+data/uploads/
+data/vector_store/
