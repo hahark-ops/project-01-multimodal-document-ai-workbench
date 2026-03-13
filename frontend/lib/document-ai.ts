@@ -64,6 +64,25 @@ export type RetrievalSearchResponse = {
   results: RetrievalResult[];
 };
 
+export type Citation = {
+  citation_id: string;
+  chunk_id: string;
+  page_number: number;
+  chunk_index: number;
+  score: number;
+  excerpt: string;
+};
+
+export type GroundedAnswerResponse = {
+  question: string;
+  document_id: string;
+  answer_text: string;
+  answer_strategy: string;
+  top_k: number;
+  citations: Citation[];
+  latency_ms: number;
+};
+
 function isUploadPageSummary(value: unknown): value is UploadPageSummary {
   return (
     isRecord(value) &&
@@ -106,6 +125,18 @@ function isRetrievalResult(value: unknown): value is RetrievalResult {
     typeof value.word_count === "number" &&
     typeof value.score === "number" &&
     typeof value.text === "string"
+  );
+}
+
+function isCitation(value: unknown): value is Citation {
+  return (
+    isRecord(value) &&
+    typeof value.citation_id === "string" &&
+    typeof value.chunk_id === "string" &&
+    typeof value.page_number === "number" &&
+    typeof value.chunk_index === "number" &&
+    typeof value.score === "number" &&
+    typeof value.excerpt === "string"
   );
 }
 
@@ -152,5 +183,19 @@ export function isRetrievalSearchResponse(value: unknown): value is RetrievalSea
     typeof value.top_k === "number" &&
     Array.isArray(value.results) &&
     value.results.every(isRetrievalResult)
+  );
+}
+
+export function isGroundedAnswerResponse(value: unknown): value is GroundedAnswerResponse {
+  return (
+    isRecord(value) &&
+    typeof value.question === "string" &&
+    typeof value.document_id === "string" &&
+    typeof value.answer_text === "string" &&
+    typeof value.answer_strategy === "string" &&
+    typeof value.top_k === "number" &&
+    typeof value.latency_ms === "number" &&
+    Array.isArray(value.citations) &&
+    value.citations.every(isCitation)
   );
 }

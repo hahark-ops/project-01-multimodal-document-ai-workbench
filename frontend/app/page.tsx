@@ -5,11 +5,11 @@ const deliverables = [
   "Local file storage",
   "Page-by-page text extraction",
   "Chunk metadata generation",
-  "Top-k retrieval playground"
+  "Top-k retrieval playground",
+  "Grounded answer with citation"
 ];
 
 const nextPhases = [
-  "Grounded answer with citation",
   "Summary and evaluation"
 ];
 
@@ -27,12 +27,12 @@ export default function HomePage() {
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 md:text-lg">
               텍스트, 표, 이미지가 섞인 PDF 문서를 대상으로 근거 기반 검색과 응답을 만드는
-              프로젝트입니다. 지금은 Phase 2로 chunking과 retrieval foundation까지 연결한
+              프로젝트입니다. 지금은 Phase 3로 retrieval과 grounded answer까지 연결한
               상태입니다.
             </p>
           </div>
           <div className="rounded-full border border-slate-300/80 bg-white/70 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur">
-            Phase 2: Retrieval foundation
+            Phase 3: Grounded answer
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export default function HomePage() {
                 {nextPhases.map((item, index) => (
                   <li key={item} className="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-4">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-950">
-                      {index + 3}
+                      {index + 4}
                     </span>
                     <span className="text-sm text-slate-100">{item}</span>
                   </li>

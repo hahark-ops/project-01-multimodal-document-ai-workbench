@@ -125,6 +125,16 @@ Phase 2 Baseline Decisions:
 완료 기준:
 - 답변과 함께 근거 페이지를 보여줄 수 있다.
 
+상태:
+- baseline 구현 완료, 답변 품질 보강 예정
+
+Phase 3 Baseline Decisions:
+
+- answer 생성 방식: providerless extractive grounded answer baseline
+- citation 단위: chunk 기반 + page number 노출
+- 질문 범위: 현재는 문서 단위 질문응답 우선
+- answer API는 이후 LLM provider를 붙이더라도 유지 가능한 계약으로 설계
+
 ### Phase 4 - Summary And Evaluation
 
 목표:
@@ -167,17 +177,26 @@ Phase 2 Baseline Decisions:
 
 지금 당장 해야 할 일:
 
-- 질문응답 API 입력/출력 형식 정의
-- citation 구조 정의
-- Phase 3 grounded answer 시작 조건 확정
+- summary API 입력/출력 형식 정의
+- 평가 질문 세트 작성
+- retrieval / grounded answer 품질 점검 기준 정의
 
 ### Next Commit Goal
 
 다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
 
-- 질문응답 API 계약 정의
-- citation 데이터 구조 확정
-- grounded answer 시작점 문서화
+- summary API 계약 정의
+- 평가 질문 세트 초안 작성
+- 품질 점검 기준 문서화
+
+### Phase 3 Task Checklist
+
+- [x] 질문응답 API 계약 정의
+- [x] citation 데이터 구조 확정
+- [x] grounded answer baseline 구현
+- [x] grounded answer UI 구현
+- [x] grounded answer 자동화 테스트 추가
+- [ ] 평가 질문 세트로 grounded answer 품질 점검
 
 ### Phase 2 Task Checklist
 

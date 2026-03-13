@@ -101,6 +101,51 @@ def test_retrieval_search_returns_relevant_chunk() -> None:
     assert "terminate" in payload["results"][0]["text"].lower()
 
 
+def test_grounded_answer_returns_answer_and_citations() -> None:
+    client = TestClient(app)
+
+    upload_response = client.post(
+        "/documents/upload",
+        files={"file": ("sample-contract-template.pdf", _build_test_pdf_bytes(), "application/pdf")},
+    )
+    document_id = upload_response.json()["document_id"]
+
+    response = client.post(
+        "/answers/ask",
+        json={
+            "document_id": document_id,
+            "question": "terminate notice",
+            "top_k": 3,
+            "max_citations": 2,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["document_id"] == document_id
+    assert payload["answer_strategy"] == "extractive-grounded-baseline"
+    assert payload["answer_text"]
+    assert len(payload["citations"]) >= 1
+    assert payload["citations"][0]["page_number"] == 2
+    assert "terminate" in payload["citations"][0]["excerpt"].lower()
+
+
+def test_grounded_answer_missing_chunks_returns_not_found() -> None:
+    client = TestClient(app)
+
+    response = client.post(
+        "/answers/ask",
+        json={
+            "document_id": "doc_missing",
+            "question": "terminate notice",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "DOCUMENT_CHUNKS_NOT_FOUND"
+
+
 def test_reject_non_pdf_upload() -> None:
     client = TestClient(app)
 

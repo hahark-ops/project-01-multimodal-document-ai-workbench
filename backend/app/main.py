@@ -10,7 +10,7 @@ from app.schemas.documents import APIErrorDetail, APIErrorResponse
 
 app = FastAPI(
     title="Multimodal Document AI Workbench API",
-    description="Backend API for Phase 1 PDF upload and parsing.",
+    description="Backend API for document upload, retrieval, and grounded answer baselines.",
     version="0.1.0",
 )
 

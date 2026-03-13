@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Baseline v0.3  
+Status: Baseline v0.4  
 Last Updated: 2026-03-13
 
 ## 1. Product Goal
@@ -68,9 +68,10 @@ Frontend
 - Parsing: PyMuPDF
 - Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 문서 id 기준 JSON 저장
 - Phase 2 Retrieval Store: 문서 id 기준 chunk JSON + 로컬 on-disk vector index
+- Phase 3 Answering: providerless extractive grounded answer baseline
 - OCR: Tesseract를 후속 단계에 추가
 - External Vector Store: Qdrant 또는 pgvector는 grounded answer 이후 확장 시점에 재검토
-- Model Provider: OpenAI 또는 Bedrock을 Phase 3 시작 전에 확정
+- Model Provider: OpenAI 또는 Bedrock은 extractive baseline 검증 후 확정
 
 선정 이유:
 
@@ -87,7 +88,8 @@ Frontend
 |------|-----------|-----------|
 | 샘플 문서 유형 | 완료 | `NC DAC Sample Contract Template` 선택. 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 기준 통과 |
 | Retrieval Baseline | 완료 | 외부 인프라 없이 반복 실험 가능한 로컬 on-disk vector index 선택 |
-| Model Provider | Phase 3 시작 전 | API 사용성, 비용, AWS 확장성 |
+| Grounded Answer Baseline | 완료 | provider 의존성 없이 retrieval과 citation 흐름을 먼저 검증하는 extractive 방식 선택 |
+| Model Provider | Phase 4 전 | API 사용성, 비용, AWS 확장성 |
 | 장기 저장 방식 | Phase 2 시작 전 | 로컬 개발 편의성, 이후 S3 확장 가능성 |
 
 ### Phase 1 Selected Sample
@@ -120,6 +122,14 @@ Frontend
 - 로컬 on-disk vector index
 - Frontend retrieval playground UI
 - chunk preview 화면
+
+### Implemented In Phase 3
+
+- Backend grounded answer 생성 로직
+- Backend 질문응답 API
+- citation 데이터 구조
+- Frontend grounded answer UI
+- answer와 retrieval 비교 화면
 
 ### Frontend
 
@@ -374,16 +384,48 @@ Phase 2에서는 아래 두 개의 retrieval surface를 추가합니다.
 
 Phase 2 baseline은 grounded answer를 생성하지 않고, retrieval 결과만 반환한다.
 
-## 14. Main Risks
+## 14. Phase 3 Grounded Answer Contract
+
+Phase 3에서는 아래 grounded answer surface를 추가합니다.
+
+### `POST /answers/ask`
+
+목적:
+- 질문과 관련된 retrieval 결과를 바탕으로 답변과 citation을 함께 반환한다.
+
+요청 핵심:
+
+- `question`
+- `document_id`
+- `top_k`
+- `max_citations`
+
+성공 응답 핵심:
+
+- `question`
+- `document_id`
+- `answer_text`
+- `answer_strategy`
+- `top_k`
+- `citations[].page_number`
+- `citations[].chunk_index`
+- `citations[].excerpt`
+- `latency_ms`
+
+Phase 3 baseline은 외부 LLM 없이 extractive grounded answer를 생성한다. 즉, retrieval로 찾은 근거 문장을 조합해서 답변을 만들고, citation 배열로 근거를 노출한다.
+
+## 15. Main Risks
 
 - 문서 종류에 따라 파싱 품질 차이가 크다.
 - retrieval이 맞아도 답변이 근거를 잘못 묶을 수 있다.
 - OCR 단계가 들어가면 난도가 급격히 올라간다.
+- extractive baseline은 자연스러운 답변 품질이 제한될 수 있다.
 
 따라서 초기 성공 기준은 "텍스트 중심 PDF에서 업로드와 파싱 결과 확인 흐름이 안정적으로 보이는가"입니다.
 
-## 15. Open Questions
+## 16. Open Questions
 
 - 외부 vector store를 Qdrant로 갈지, pgvector로 갈지
 - hashed embedding baseline을 어떤 시점에 provider embedding으로 교체할지
+- extractive grounded answer를 어떤 시점에 LLM grounded answer로 교체할지
 - 요약 기능을 retrieval 뒤에 붙일지, 독립 기능으로 먼저 만들지

@@ -173,3 +173,29 @@
 - Phase 3를 위해 질문응답 API 계약을 정의한다.
 - citation 구조와 답변 포맷을 고정한다.
 - retrieval 결과를 바탕으로 grounded answer를 생성하는 흐름을 설계한다.
+
+## 2026-03-13 - Phase 3 grounded answer 구현
+
+### 목표
+- retrieval 결과를 바탕으로 답변과 citation을 함께 반환하는 grounded answer baseline을 만든다.
+
+### 변경 사항
+- backend에 `POST /answers/ask` API를 추가했다.
+- retrieval 결과에서 문장을 추출해 답변을 구성하는 extractive grounded answer 로직을 구현했다.
+- citation 구조와 latency 필드를 응답에 포함했다.
+- frontend에 grounded answer와 citation을 함께 보는 UI를 추가했다.
+- Phase 3 상태를 README, PLAN, ARCHITECTURE에 반영했다.
+
+### 배운 점 / 이슈
+- 외부 LLM을 바로 붙이지 않아도 grounded answer의 핵심은 `답변 + 근거 연결 구조`를 먼저 만드는 데 있다.
+- extractive baseline은 답변 자연스러움은 제한되지만, citation 검증과 API 계약 고정에는 유리하다.
+- retrieval과 answer를 같은 화면에서 비교하니 검색 품질과 답변 품질을 분리해서 보기 쉬워졌다.
+
+### 검증
+- backend: `uv run pytest` 통과
+- frontend: `npm run build` 통과
+
+### 다음 단계
+- Phase 4를 위해 summary API와 평가 질문 세트를 정의한다.
+- retrieval / grounded answer 품질을 질문 세트 기준으로 점검한다.
+- 포트폴리오용 데모 캡처와 실패 사례 기록을 보강한다.
