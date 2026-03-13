@@ -4,10 +4,10 @@
 
 ## Current Status
 
-- 상태: Phase 3 grounded answer 구현 완료, 샘플 문서 데모 기록 보강 예정
+- 상태: Phase 4 summary and evaluation 구현 완료, 샘플 문서 데모 기록 보강 예정
 - 시작일: 2026-03-13
 - 대상: AWS AI School 포트폴리오 프로젝트
-- 현재 저장소 구성: 계획 문서 + Phase 3 코드 구현
+- 현재 저장소 구성: 계획 문서 + Phase 4 코드 구현
 
 ## Document Map
 
@@ -71,9 +71,20 @@ Phase 3에서 추가로 구현한 범위는 아래와 같습니다.
 - grounded answer와 retrieval 결과를 함께 확인하는 UI
 - latency와 answer strategy 표시
 
+## Current Summary And Evaluation
+
+Phase 4에서 추가로 구현한 범위는 아래와 같습니다.
+
+- `POST /summaries/generate`
+- extractive summary baseline과 key point 추출
+- `POST /evaluations/run`
+- 샘플 평가 질문 세트와 품질 지표 계산
+- summary 카드와 evaluation scorecard UI
+- 질문별 pass/check 결과 표시
+
 현재 저장소에 남아 있는 검증 근거:
 
-- 자동화 테스트로 PDF 업로드, 상세 조회, chunk 조회, retrieval 검색, grounded answer, 파일 검증, 에러 응답 형식 확인
+- 자동화 테스트로 PDF 업로드, 상세 조회, chunk 조회, retrieval 검색, grounded answer, summary 생성, evaluation 실행, 파일 검증, 에러 응답 형식 확인
 - 프론트엔드 프로덕션 빌드 통과
 - 샘플 문서를 사용한 실제 데모 캡처와 회고는 이후 포트폴리오 정리 단계에서 추가
 

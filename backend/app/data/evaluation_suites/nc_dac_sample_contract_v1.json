@@ -1,0 +1,37 @@
+{
+  "suite_id": "nc_dac_sample_contract_v1",
+  "suite_name": "NC DAC Sample Contract Template Evaluation Set",
+  "document_name": "NC DAC Sample Contract Template",
+  "questions": [
+    {
+      "question_id": "q_contractual_status",
+      "question": "What does the contract say about contractual status?",
+      "expected_page": 1,
+      "expected_keywords": ["not", "employee"]
+    },
+    {
+      "question_id": "q_time_of_performance",
+      "question": "Which dates are identified in the time of performance section?",
+      "expected_page": 1,
+      "expected_keywords": ["effective date", "termination date"]
+    },
+    {
+      "question_id": "q_taxes",
+      "question": "What can the agency do if the contractor fails to provide a correct taxpayer number?",
+      "expected_page": 2,
+      "expected_keywords": ["withhold", "20%"]
+    },
+    {
+      "question_id": "q_situs",
+      "question": "Which state's laws govern the contract?",
+      "expected_page": 2,
+      "expected_keywords": ["north carolina"]
+    },
+    {
+      "question_id": "q_assignment",
+      "question": "Can the contractor subcontract work without approval?",
+      "expected_page": 2,
+      "expected_keywords": ["written approval"]
+    }
+  ]
+}

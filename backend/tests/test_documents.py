@@ -9,9 +9,34 @@ from app.services.storage import StorageWriteError
 def _build_test_pdf_bytes() -> bytes:
     document = fitz.open()
     page_1 = document.new_page()
-    page_1.insert_text((72, 72), "This contract is entered into by both parties.")
+    page_1.insert_textbox(
+        fitz.Rect(72, 72, 520, 760),
+        (
+            "AGREEMENT. "
+            "(1) CONTRACTUAL STATUS: The CONTRACTOR is not and will not by virtue of this "
+            "contract acquire the status of an employee of the AGENCY. "
+            "(2) TIME OF PERFORMANCE: The effective date of this agreement is January 1, 2026 "
+            "and the termination date is December 31, 2026. "
+            "(3) COMPENSATION: The AGENCY will pay the CONTRACTOR at an hourly rate for services performed. "
+            "(5) INVOICE: Payment under this AGREEMENT will be made upon receipt of an original invoice."
+        ),
+        fontsize=11,
+        lineheight=1.4,
+    )
     page_2 = document.new_page()
-    page_2.insert_text((72, 72), "Either party may terminate with written notice.")
+    page_2.insert_textbox(
+        fitz.Rect(72, 72, 520, 760),
+        (
+            "(7) FUNDING: This AGREEMENT shall automatically terminate if funds cease to be available. "
+            "(9) TAXES: Failure to provide the AGENCY with a correct taxpayer number authorizes the "
+            "AGENCY to withhold 20% of any amount due and payable under this AGREEMENT. "
+            "(11) SITUS: This contract shall be governed by the laws of North Carolina. "
+            "(15) ASSIGNMENT: The CONTRACTOR shall not subcontract any work without the written approval "
+            "of the AGENCY."
+        ),
+        fontsize=11,
+        lineheight=1.4,
+    )
     pdf_bytes = document.tobytes()
     document.close()
     return pdf_bytes
@@ -55,7 +80,7 @@ def test_upload_pdf_and_fetch_document_detail(tmp_path) -> None:
     assert detail_payload["document_id"] == upload_payload["document_id"]
     assert detail_payload["chunk_count"] == upload_payload["chunk_count"]
     assert len(detail_payload["pages"]) == 2
-    assert "written notice" in detail_payload["pages"][1]["text"].lower()
+    assert "north carolina" in detail_payload["pages"][1]["text"].lower()
 
 
 def test_get_document_chunks_returns_chunk_metadata() -> None:
@@ -98,7 +123,7 @@ def test_retrieval_search_returns_relevant_chunk() -> None:
     assert payload["document_id"] == document_id
     assert len(payload["results"]) == 2
     assert payload["results"][0]["page_number"] == 2
-    assert "terminate" in payload["results"][0]["text"].lower()
+    assert "withhold 20%" in payload["results"][0]["text"].lower()
 
 
 def test_grounded_answer_returns_answer_and_citations() -> None:
@@ -114,7 +139,7 @@ def test_grounded_answer_returns_answer_and_citations() -> None:
         "/answers/ask",
         json={
             "document_id": document_id,
-            "question": "terminate notice",
+            "question": "taxpayer number withhold 20%",
             "top_k": 3,
             "max_citations": 2,
         },
@@ -128,7 +153,7 @@ def test_grounded_answer_returns_answer_and_citations() -> None:
     assert payload["answer_text"]
     assert len(payload["citations"]) >= 1
     assert payload["citations"][0]["page_number"] == 2
-    assert "terminate" in payload["citations"][0]["excerpt"].lower()
+    assert "withhold 20%" in payload["citations"][0]["excerpt"].lower()
 
 
 def test_grounded_answer_missing_chunks_returns_not_found() -> None:
@@ -138,12 +163,65 @@ def test_grounded_answer_missing_chunks_returns_not_found() -> None:
         "/answers/ask",
         json={
             "document_id": "doc_missing",
-            "question": "terminate notice",
+            "question": "taxpayer number",
         },
     )
 
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "DOCUMENT_CHUNKS_NOT_FOUND"
+
+
+def test_summary_generation_returns_key_points() -> None:
+    client = TestClient(app)
+
+    upload_response = client.post(
+        "/documents/upload",
+        files={"file": ("sample-contract-template.pdf", _build_test_pdf_bytes(), "application/pdf")},
+    )
+    document_id = upload_response.json()["document_id"]
+
+    response = client.post(
+        "/summaries/generate",
+        json={"document_id": document_id, "max_points": 3, "max_highlights": 3},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["document_id"] == document_id
+    assert payload["summary_strategy"] == "extractive-summary-baseline"
+    assert len(payload["key_points"]) == 3
+    assert len(payload["highlights"]) == 3
+    assert "contractual status" in payload["summary_text"].lower()
+
+
+def test_evaluation_run_returns_metrics_and_cases() -> None:
+    client = TestClient(app)
+
+    upload_response = client.post(
+        "/documents/upload",
+        files={"file": ("sample-contract-template.pdf", _build_test_pdf_bytes(), "application/pdf")},
+    )
+    document_id = upload_response.json()["document_id"]
+
+    response = client.post(
+        "/evaluations/run",
+        json={
+            "document_id": document_id,
+            "suite_id": "nc_dac_sample_contract_v1",
+            "top_k": 3,
+            "max_citations": 2,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["document_id"] == document_id
+    assert payload["suite_id"] == "nc_dac_sample_contract_v1"
+    assert payload["metrics"]["question_count"] == 5
+    assert len(payload["cases"]) == 5
+    assert payload["metrics"]["retrieval_hit_rate"] >= 0.8
 
 
 def test_reject_non_pdf_upload() -> None:

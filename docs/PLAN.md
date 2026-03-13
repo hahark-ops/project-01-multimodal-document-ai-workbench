@@ -149,6 +149,16 @@ Phase 3 Baseline Decisions:
 완료 기준:
 - 품질 지표나 실패 사례를 포트폴리오에 기록할 수 있다.
 
+상태:
+- baseline 구현 완료, 평가 결과 해석과 포트폴리오 정리 보강 예정
+
+Phase 4 Baseline Decisions:
+
+- summary 생성 방식: providerless extractive summary baseline
+- evaluation 입력: 문서 id + 번들된 평가 질문 세트
+- evaluation 지표: retrieval hit rate, citation hit rate, answer keyword hit rate, overall pass rate
+- 평가 목적: 모델 비교보다 현재 baseline의 강점/약점을 드러내는 기록 우선
+
 ### Phase 5 - Portfolio Wrap-up
 
 목표:
@@ -177,17 +187,27 @@ Phase 3 Baseline Decisions:
 
 지금 당장 해야 할 일:
 
-- summary API 입력/출력 형식 정의
-- 평가 질문 세트 작성
-- retrieval / grounded answer 품질 점검 기준 정의
+- 포트폴리오용 데모 캡처 정리
+- 실패 사례와 품질 해석 정리
+- 최종 README와 발표 포인트 다듬기
 
 ### Next Commit Goal
 
 다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
 
-- summary API 계약 정의
-- 평가 질문 세트 초안 작성
-- 품질 점검 기준 문서화
+- 데모 캡처 정리
+- 품질 결과 해석 문서화
+- 최종 포트폴리오 메시지 정리
+
+### Phase 4 Task Checklist
+
+- [x] summary API 계약 정의
+- [x] summary baseline 구현
+- [x] evaluation API 구현
+- [x] 샘플 평가 질문 세트 추가
+- [x] summary / evaluation UI 구현
+- [x] summary / evaluation 자동화 테스트 추가
+- [ ] 평가 결과 해석과 실패 사례 기록
 
 ### Phase 3 Task Checklist
 

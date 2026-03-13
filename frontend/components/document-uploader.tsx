@@ -2,6 +2,7 @@
 
 import { startTransition, useState } from "react";
 import { RetrievalPlayground } from "@/components/retrieval-playground";
+import { SummaryEvaluationPanel } from "@/components/summary-evaluation-panel";
 import { getApiBaseUrl, getApiErrorMessage, parseJsonSafely } from "@/lib/api";
 import { DocumentDetail, isDocumentDetail, isUploadResponse, UploadResponse } from "@/lib/document-ai";
 
@@ -81,19 +82,19 @@ export function DocumentUploader() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-            Phase 3 Demo
+            Phase 4 Demo
           </p>
           <h2 className="mt-3 text-2xl font-semibold text-slate-950">
-            Upload, Search, And Answer From A PDF
+            Upload, Answer, And Evaluate A PDF
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
             현재 단계에서는 PDF 업로드, 로컬 저장, 페이지별 텍스트 추출, chunk 생성,
-            top-k retrieval, 그리고 citation이 포함된 grounded answer까지를 하나의 흐름으로
+            top-k retrieval, grounded answer, 문서 요약, 평가 결과 확인까지를 하나의 흐름으로
             구현합니다.
           </p>
         </div>
         <div className="rounded-full border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-700">
-          Grounded answer ready
+          Summary and evaluation ready
         </div>
       </div>
 
@@ -163,6 +164,10 @@ export function DocumentUploader() {
           documentId={uploadResult.document_id}
           filename={uploadResult.filename}
         />
+      ) : null}
+
+      {uploadResult ? (
+        <SummaryEvaluationPanel documentId={uploadResult.document_id} />
       ) : null}
 
       {documentDetail ? (

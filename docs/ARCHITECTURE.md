@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Baseline v0.4  
+Status: Baseline v0.5  
 Last Updated: 2026-03-13
 
 ## 1. Product Goal
@@ -69,6 +69,7 @@ Frontend
 - Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 문서 id 기준 JSON 저장
 - Phase 2 Retrieval Store: 문서 id 기준 chunk JSON + 로컬 on-disk vector index
 - Phase 3 Answering: providerless extractive grounded answer baseline
+- Phase 4 Summary/Evaluation: providerless extractive summary + bundled evaluation suite
 - OCR: Tesseract를 후속 단계에 추가
 - External Vector Store: Qdrant 또는 pgvector는 grounded answer 이후 확장 시점에 재검토
 - Model Provider: OpenAI 또는 Bedrock은 extractive baseline 검증 후 확정
@@ -89,7 +90,8 @@ Frontend
 | 샘플 문서 유형 | 완료 | `NC DAC Sample Contract Template` 선택. 공개 가능 여부, 텍스트 중심 여부, 페이지 번호 확인 가능 여부 기준 통과 |
 | Retrieval Baseline | 완료 | 외부 인프라 없이 반복 실험 가능한 로컬 on-disk vector index 선택 |
 | Grounded Answer Baseline | 완료 | provider 의존성 없이 retrieval과 citation 흐름을 먼저 검증하는 extractive 방식 선택 |
-| Model Provider | Phase 4 전 | API 사용성, 비용, AWS 확장성 |
+| Summary/Evaluation Baseline | 완료 | providerless summary와 번들 평가셋으로 품질 기록을 먼저 남기는 방식 선택 |
+| Model Provider | Phase 5 전 | API 사용성, 비용, AWS 확장성 |
 | 장기 저장 방식 | Phase 2 시작 전 | 로컬 개발 편의성, 이후 S3 확장 가능성 |
 
 ### Phase 1 Selected Sample
@@ -130,6 +132,15 @@ Frontend
 - citation 데이터 구조
 - Frontend grounded answer UI
 - answer와 retrieval 비교 화면
+
+### Implemented In Phase 4
+
+- Backend summary 생성 로직
+- Backend evaluation 실행 로직
+- 요약 API
+- evaluation API
+- 번들된 평가 질문 세트
+- Frontend summary / evaluation 패널
 
 ### Frontend
 
@@ -184,6 +195,21 @@ Frontend
 - answer_text
 - citations
 - latency_ms
+
+### Summary
+
+- document_id
+- summary_text
+- key_points
+- highlights
+- latency_ms
+
+### Evaluation
+
+- suite_id
+- document_id
+- metrics
+- cases
 
 ## 9. Storage Boundary For Phase 1
 
@@ -414,18 +440,57 @@ Phase 3에서는 아래 grounded answer surface를 추가합니다.
 
 Phase 3 baseline은 외부 LLM 없이 extractive grounded answer를 생성한다. 즉, retrieval로 찾은 근거 문장을 조합해서 답변을 만들고, citation 배열로 근거를 노출한다.
 
-## 15. Main Risks
+## 15. Phase 4 Summary And Evaluation Contract
+
+Phase 4에서는 아래 두 개의 surface를 추가합니다.
+
+### `POST /summaries/generate`
+
+목적:
+- 문서의 핵심 문장을 요약과 key point 형태로 반환한다.
+
+응답 핵심:
+
+- `document_id`
+- `summary_text`
+- `key_points`
+- `highlights[].page_number`
+- `highlights[].chunk_index`
+- `highlights[].excerpt`
+- `latency_ms`
+
+### `POST /evaluations/run`
+
+목적:
+- 번들된 평가 질문 세트로 retrieval / grounded answer baseline을 점검한다.
+
+응답 핵심:
+
+- `suite_id`
+- `document_id`
+- `metrics.retrieval_hit_rate`
+- `metrics.citation_hit_rate`
+- `metrics.answer_keyword_hit_rate`
+- `metrics.overall_pass_rate`
+- `cases[].question`
+- `cases[].passed`
+
+Phase 4 baseline은 summary와 evaluation 모두 외부 모델 없이 동작한다.
+
+## 16. Main Risks
 
 - 문서 종류에 따라 파싱 품질 차이가 크다.
 - retrieval이 맞아도 답변이 근거를 잘못 묶을 수 있다.
 - OCR 단계가 들어가면 난도가 급격히 올라간다.
 - extractive baseline은 자연스러운 답변 품질이 제한될 수 있다.
+- evaluation keyword match는 정밀한 의미 평가지표가 아니라 baseline 확인용이다.
 
 따라서 초기 성공 기준은 "텍스트 중심 PDF에서 업로드와 파싱 결과 확인 흐름이 안정적으로 보이는가"입니다.
 
-## 16. Open Questions
+## 17. Open Questions
 
 - 외부 vector store를 Qdrant로 갈지, pgvector로 갈지
 - hashed embedding baseline을 어떤 시점에 provider embedding으로 교체할지
 - extractive grounded answer를 어떤 시점에 LLM grounded answer로 교체할지
+- extractive summary를 어떤 시점에 abstractive summary로 교체할지
 - 요약 기능을 retrieval 뒤에 붙일지, 독립 기능으로 먼저 만들지

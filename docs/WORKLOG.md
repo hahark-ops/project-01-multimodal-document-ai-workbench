@@ -199,3 +199,28 @@
 - Phase 4를 위해 summary API와 평가 질문 세트를 정의한다.
 - retrieval / grounded answer 품질을 질문 세트 기준으로 점검한다.
 - 포트폴리오용 데모 캡처와 실패 사례 기록을 보강한다.
+
+## 2026-03-13 - Phase 4 summary and evaluation 구현
+
+### 목표
+- 문서 요약과 최소 평가 체계를 추가해서 품질 지표와 실패 지점을 저장소 안에 남긴다.
+
+### 변경 사항
+- backend에 `POST /summaries/generate`, `POST /evaluations/run` API를 추가했다.
+- extractive summary baseline과 key point 추출 로직을 구현했다.
+- NC DAC sample contract 기준 평가 질문 세트와 품질 지표 계산 로직을 추가했다.
+- frontend에 summary 패널과 evaluation scorecard UI를 추가했다.
+- README, PLAN, ARCHITECTURE에 Phase 4 상태와 계약을 반영했다.
+
+### 배운 점 / 이슈
+- 포트폴리오 관점에서는 "잘 답한다"보다 "어디까지 자동 평가했고, 어떤 기준으로 봤는가"를 남기는 것이 중요하다.
+- evaluation 지표는 아직 정밀한 의미 평가는 아니지만, retrieval / citation / keyword 기준으로 baseline 상태를 빠르게 확인하는 데 유용하다.
+- summary와 evaluation을 같은 화면에 두니 사용자 기능과 품질 점검 흐름이 자연스럽게 이어졌다.
+
+### 검증
+- backend: `uv run pytest` 통과
+- frontend: `npm run build` 통과
+
+### 다음 단계
+- Phase 5로 넘어가서 데모 캡처, 품질 해석, 실패 사례, 최종 README 정리를 진행한다.
+- evaluation 결과를 읽고 어떤 질문이 약한지 포트폴리오 관점에서 해석한다.
