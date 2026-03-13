@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Draft v0.1  
+Status: Baseline v0.2  
 Last Updated: 2026-03-13
 
 ## 1. Product Goal
@@ -66,7 +66,7 @@ Frontend
 - Frontend: Next.js
 - Backend: FastAPI
 - Parsing: PyMuPDF
-- Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 단순 JSON 또는 메모리 저장으로 시작
+- Phase 1 Storage: 원본 PDF는 로컬 파일, 파싱 결과 메타데이터는 문서 id 기준 JSON 저장
 - OCR: Tesseract를 후속 단계에 추가
 - Vector Store: Qdrant 또는 pgvector를 Phase 2 시작 전에 확정
 - Model Provider: OpenAI 또는 Bedrock을 Phase 3 시작 전에 확정
@@ -100,6 +100,16 @@ Frontend
   - 이후 contract-style 질문응답 예시로 확장하기 좋다.
 
 ## 7. Planned Components
+
+### Implemented In Phase 1
+
+- Frontend 문서 업로드 화면
+- Frontend 파싱 결과 화면
+- Backend 문서 업로드 API
+- Backend 문서 상세 조회 API
+- Backend PDF 파싱 서비스
+- 로컬 PDF 저장
+- JSON 기반 파싱 결과 저장
 
 ### Frontend
 
@@ -222,6 +232,15 @@ Phase 1에서는 아래 두 개의 API만 우선 정의합니다.
 }
 ```
 
+추가 에러 코드:
+
+- `EMPTY_FILE`
+- `PDF_PARSE_FAILED`
+- `FILE_SAVE_FAILED`
+- `PARSED_DOCUMENT_SAVE_FAILED`
+- `PARSED_DOCUMENT_LOAD_FAILED`
+- `VALIDATION_ERROR`
+
 ### `GET /documents/{document_id}`
 
 목적:
@@ -247,6 +266,17 @@ Phase 1에서는 아래 두 개의 API만 우선 정의합니다.
       "text": "Full page text..."
     }
   ]
+}
+```
+
+실패 응답 예시:
+
+```json
+{
+  "error": {
+    "code": "DOCUMENT_NOT_FOUND",
+    "message": "Document 'doc_001' was not found."
+  }
 }
 ```
 
@@ -282,6 +312,12 @@ Phase 1 완성 기준은 아래와 같습니다.
 - 파싱된 텍스트를 페이지 단위로 확인할 수 있다.
 - 샘플 문서 1개 이상에서 데모가 가능하다.
 - 데모 화면에서 업로드와 파싱 결과 확인 흐름이 보인다.
+
+현재 저장소 기준 확인된 근거:
+
+- 자동화 테스트로 업로드, 상세 조회, 파일 형식 검증, 빈 파일 검증, 404 응답 형식을 확인
+- 프론트엔드 프로덕션 빌드 통과
+- 샘플 문서 실데모 캡처는 포트폴리오 정리 단계에서 별도 기록 예정
 
 최종 MVP의 품질 기준은 `docs/PLAN.md`를 따른다.
 

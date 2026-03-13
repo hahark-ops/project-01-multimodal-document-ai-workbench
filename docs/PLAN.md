@@ -35,7 +35,7 @@ Last Updated: 2026-03-13
 - README, ARCHITECTURE, WORKLOG, PLAN 작성 완료
 
 상태:
-- 완료
+- 구현 완료, 샘플 문서 데모 기록 보강 예정
 
 ### Phase 1 - First Vertical Slice
 
@@ -74,6 +74,9 @@ Phase 1 Demo Definition:
 
 완료 기준:
 - 한 개 이상의 PDF를 업로드하고 파싱 결과를 볼 수 있다.
+
+상태:
+- 완료
 
 Phase 1 Execution Order:
 
@@ -154,17 +157,17 @@ Phase 1 Execution Order:
 
 지금 당장 해야 할 일:
 
-- 업로드 / 파싱 API 계약 정의
-- 파싱 결과 데이터 구조 정의
-- 첫 vertical slice 구현 범위를 파일 저장과 페이지 텍스트 추출까지로 고정
+- chunking 기준 정의
+- retrieval 기준 메타데이터 구조 설계
+- Vector Store 선택 기준 확정
 
 ### Next Commit Goal
 
 다음 작업 단위는 아래 세 가지가 한 번에 보이게 만드는 것이다.
 
-- 업로드 / 파싱 API 계약 확정
-- 파싱 결과 데이터 구조 확정
-- 첫 vertical slice 구현 시작점 문서화
+- chunk 데이터 구조 확정
+- retrieval 실험 기준 정의
+- Phase 2 시작점 문서화
 
 ### Phase 1 Task Checklist
 
@@ -173,8 +176,9 @@ Phase 1 Execution Order:
 - [x] Phase 1에서 사용할 저장 방식 확정
 - [x] 업로드 API 입력/출력 형식 정의
 - [x] 파싱 결과 데이터 구조 정의
-- [ ] 결과 확인 화면 또는 API 출력 형태 정의
-- [ ] Phase 1 완료 조건을 README / WORKLOG에 연결
+- [x] 결과 확인 화면 또는 API 출력 형태 정의
+- [x] Phase 1 완료 조건을 README / WORKLOG에 연결
+- [ ] 샘플 문서 기반 데모 캡처 또는 시연 기록 추가
 
 ### Recommended First Issue Breakdown
 

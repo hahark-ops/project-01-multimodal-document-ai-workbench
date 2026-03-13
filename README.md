@@ -4,10 +4,10 @@
 
 ## Current Status
 
-- 상태: 재시작 완료, 문서 중심 계획 단계
+- 상태: Phase 1 vertical slice 구현 완료, 샘플 문서 데모 기록 보강 예정
 - 시작일: 2026-03-13
 - 대상: AWS AI School 포트폴리오 프로젝트
-- 현재 저장소 구성: 계획 문서 4개만 유지
+- 현재 저장소 구성: 계획 문서 + Phase 1 코드 구현
 
 ## Document Map
 
@@ -36,11 +36,25 @@
 
 가장 먼저 만들 기능은 최종 MVP 전체가 아니라 아래 범위입니다.
 
-- 텍스트 중심 PDF 1개 이상 업로드
-- 페이지별 텍스트 추출
-- 파싱 결과 화면 표시
+- [x] 텍스트 중심 PDF 1개 이상 업로드
+- [x] 페이지별 텍스트 추출
+- [x] 파싱 결과 화면 표시
 
 이 첫 단계를 통과한 뒤 retrieval, grounded answer, 요약 기능을 순서대로 붙입니다.
+
+현재 구현된 범위:
+
+- FastAPI 기반 `POST /documents/upload`
+- FastAPI 기반 `GET /documents/{document_id}`
+- 로컬 PDF 저장
+- JSON 기반 파싱 결과 저장
+- Next.js 업로드 UI와 페이지별 텍스트 결과 화면
+
+현재 저장소에 남아 있는 검증 근거:
+
+- 자동화 테스트로 PDF 업로드, 상세 조회, 파일 검증, 에러 응답 형식 확인
+- 프론트엔드 프로덕션 빌드 통과
+- 샘플 문서를 사용한 실제 데모 캡처와 회고는 이후 포트폴리오 정리 단계에서 추가
 
 ## Repository Principle
 
@@ -82,3 +96,8 @@ Phase 1에 사용할 첫 기준 문서는 아래와 같습니다.
 
 - [Wells Fargo 2024 Annual Report](https://www.wellsfargo.com/about/investor-relations/annual-reports/)
 - [IDACORP Annual Reports](https://www.idacorpinc.com/investor-relations/financial-info/annual-reports/default.aspx)
+
+## Verification
+
+- backend: `uv run pytest` 통과
+- frontend: `npm run build` 통과
